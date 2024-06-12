@@ -1,0 +1,31 @@
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
+@import "./components/custom-slick";
+@import "./main.css";
+@import "./menu.css";
+@import "./megadropdown.css";
+@import "./dashbord_navitaion.css";
+@import "./ace-responsive-menu.css";
+@import "./components/input-range-slider";
+@import "./components/custom_theme.scss";
+@import "./components/dashboard.scss";
+@import "./responsive.css";
+@import "node_modules/react-modal-video/scss/modal-video.scss";
+
+.parent-menu-active > .pro-inner-item > .pro-item-content {
+    color: var(--color-primary) !important;
+}
+
+    .parent-menu-active{
+        color: #ff5a5f ;
+        
+        .inactive-mobile-menu{
+            color: #484848 !important;
+    
+        }
+    }
+    // .inactive-mobile-menu{
+    //     color: #484848 !important;
+
+    // }
+
