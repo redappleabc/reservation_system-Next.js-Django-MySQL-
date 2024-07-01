@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 
-export function middleware(request) {
-  // const cookieStore = cookies(request);
-  // const accessToken = cookieStore.get("accessToken");
+export function middleware(req) {
+  const token = req.cookies.get('token');
+  if (!token) {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
 
-  // if (!accessToken && request.nextUrl.pathname !== "/") {
-  //   return NextResponse.redirect(new URL("/", request.url));
-  // }
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!api|auth|_next/static|_next/image|.*\\.png$).*)"],
+  matcher: ['/dashboard/:path*'],
 };

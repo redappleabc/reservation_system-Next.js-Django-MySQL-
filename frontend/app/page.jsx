@@ -1,3 +1,4 @@
+import { useSelector, useDispatch } from "react-redux";
 import HeroSlider from "@/components/HeroSlider";
 import GlobalHeroFilter from "@/components/common/GlobalHeroFilter";
 import FeaturedProperties from "@/components/FeaturedProperties";

@@ -9,23 +9,36 @@
 @import "./components/input-range-slider";
 @import "./components/custom_theme.scss";
 @import "./components/dashboard.scss";
+@import "./components/custom_variables";
 @import "./responsive.css";
 @import "node_modules/react-modal-video/scss/modal-video.scss";
 
-.parent-menu-active > .pro-inner-item > .pro-item-content {
+.parent-menu-active>.pro-inner-item>.pro-item-content {
     color: var(--color-primary) !important;
 }
 
-    .parent-menu-active{
-        color: #ff5a5f ;
-        
-        .inactive-mobile-menu{
-            color: #484848 !important;
-    
+.parent-menu-active {
+    color: #ff5a5f;
+
+    .inactive-mobile-menu {
+        color: #484848 !important;
+    }
+}
+
+.header {
+    &-dropdownmenu {
+        &-item {
+            background-color: $white-color;
+
+            &:hover {
+                background-color: $hover-gray-color;
+                cursor: pointer;
+            }
         }
     }
-    // .inactive-mobile-menu{
-    //     color: #484848 !important;
+}
 
-    // }
+// .inactive-mobile-menu{
+//     color: #484848 !important;
 
+// }

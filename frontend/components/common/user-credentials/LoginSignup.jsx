@@ -69,7 +69,7 @@ const LoginSignup = () => {
                 <Image
                   width={357}
                   height={494}
-                  className="img-fluid w100 h-100 cover"
+                  className="img-fluid w-100 h-100 cover"
                   src="/assets/images/resource/login.png"
                   alt="login.png"
                 />
@@ -93,7 +93,7 @@ const LoginSignup = () => {
                 <Image
                   width={357}
                   height={659}
-                  className="img-fluid w100 h-100 cover"
+                  className="img-fluid w-100 h-100 cover"
                   src="/assets/images/resource/register.png"
                   alt="register.png"
                 />
@@ -105,7 +105,7 @@ const LoginSignup = () => {
                 <div className="heading">
                   <h4>新規登録</h4>
                 </div>
-                <Register />
+                <Register onClose={handleCloseModal} />
               </div>
             </div>
           </div>

@@ -17,7 +17,7 @@ const Calendar = () => {
       defaultHour: now.getHours(),
       defaultMinute: now.getMinutes(),
       minuteIncrement: 1,
-      locale: 'ja',
+      locale: 'en',
       clickOpens: false,
       allowInput: true,
       monthSelectorType: 'static'
@@ -29,7 +29,7 @@ const Calendar = () => {
       defaultHour: now.getHours(),
       defaultMinute: now.getMinutes(),
       minuteIncrement: 1,
-      locale: 'ja',
+      locale: 'en',
       clickOpens: false,
       allowInput: true,
       monthSelectorType: 'static'

@@ -1,0 +1,45 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main-server.js socket-server.js",
+  "scripts": {
+    "main-server": "nodemon servers/main-server.js",
+    "socket-server": "nodemon servers/socket-server.js",
+    "server": "concurrently \"npm run main-server\" \"npm run socket-server\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-form-data": "^2.0.23",
+    "fs": "^0.0.1-security",
+    "http": "^0.0.1-security",
+    "if-env": "^1.0.4",
+    "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.10.1",
+    "nodemon": "^3.1.4",
+    "os": "^0.1.2",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "path": "^0.12.7",
+    "sequelize": "^6.37.3",
+    "sequelize-cli": "^6.6.2",
+    "sequelize-json": "^2.1.2",
+    "socket.io": "^4.7.5",
+    "uuid": "^10.0.0",
+    "wanakana": "^5.3.1"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

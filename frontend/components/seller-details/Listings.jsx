@@ -11,7 +11,7 @@ const Listings = () => {
             <div className="thumb">
               <Image
                 width={275}
-                height={240}
+                // height={240}
                 className="img-whp w-100 cover"
                 src={item.img}
                 alt={item.img}

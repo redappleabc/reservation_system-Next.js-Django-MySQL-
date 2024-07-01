@@ -3,18 +3,41 @@
 import Link from "next/link";
 import { isSinglePageActive } from "../../../utils/daynamicNavigation";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+
+import { logout, resetStatus } from "@/store/slices/authSlice";
 
 const MyAccount = () => {
-  const pathname = usePathname()
+  const pathname = usePathname();
+  const router = useRouter();
+  const dispatch = useDispatch();
+
+  const { logout_status } = useSelector(state => state.auth);
+
   const profileMenuItems = [
-    { id: 1, name: " プロフィール", ruterPath: "/profile" },
-    { id: 2, name: " チャット", ruterPath: "/message" },
-    { id: 3, name: " プラン", ruterPath: "/my-favourites" },
-    { id: 4, name: " 予約一覧", ruterPath: "/my-package" },
-    { id: 5, name: " 設　定", ruterPath: "#" },
-    { id: 6, name: " ログアウト", ruterPath: "/login" },
+    { key: 'profile', name: " プロフィール", targetLink: "/dashboard/profile" },
+    { key: 'message', name: " チャット", targetLink: "/dashboard/message" },
+    { key: 'my-favourites', name: " プラン", targetLink: "/dashboard/my-favourites" },
+    { key: 'my-package', name: " 予約一覧", targetLink: "/dashboard/my-package" },
+    { key: 'setting', name: " 設  定", targetLink: "/dashboard/setting" },
+    { key: 'logout', name: " ログアウト", targetLink: "#" },
   ];
+
+  const handleClickMenuItem = (item) => {
+    if (item.key !== 'logout') {
+      router.push(item.targetLink, { scroll: false });
+    } else {
+      const confirmMessage = "このサイトを本当に終了してもよろしいですか?";
+      if (window.confirm(confirmMessage)) {
+        dispatch(logout());
+        router.push("/");
+      } else {
+        return;
+      }
+    }
+  }
 
   return (
     <>
@@ -32,19 +55,19 @@ const MyAccount = () => {
         </p>
       </div>
       <div className="user_setting_content">
-        {profileMenuItems.map((item) => (
-          <Link
-            href={item.ruterPath}
-            key={item.id}
-            className="dropdown-item"
+        {profileMenuItems.map((item, index) => (
+          <div
+            key={index}
+            className="dropdown-item header-dropdownmenu-item"
             style={
-              isSinglePageActive(`${item.ruterPath}`, pathname)
+              isSinglePageActive(`${item.targetLink}`, pathname)
                 ? { color: "#ff5a5f" }
                 : undefined
             }
+            onClick={() => handleClickMenuItem(item)}
           >
             {item.name}
-          </Link>
+          </div>
         ))}
       </div>
     </>

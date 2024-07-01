@@ -1,16 +1,15 @@
-import { configureStore } from "@reduxjs/toolkit";
-import agentSlice from "../features/agent/agentSlice";
-import { api } from "../features/api/api";
-import filterSlice from "../features/filter/filterSlice";
-import propertiesSlice from "../features/properties/propertiesSlice";
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import { createWrapper } from "next-redux-wrapper";
+import authReducer from "./slices/authSlice";
+// import agentSlice from "../features/agent/agentSlice";
+// import { api } from "../features/api/api";
+// import filterSlice from "../features/filter/filterSlice";
+// import propertiesSlice from "../features/properties/propertiesSlice";
+
+const rootReducer = combineReducers({
+    auth: authReducer,
+})
 
 export const store = configureStore({
-    reducer: {
-        [api.reducerPath]: api.reducer,
-        properties: propertiesSlice,
-        filter: filterSlice,
-        agent: agentSlice,
-    },
-    middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(api.middleware),
+    reducer: rootReducer,
 });

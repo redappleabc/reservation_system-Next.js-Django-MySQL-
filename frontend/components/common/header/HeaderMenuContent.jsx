@@ -1,16 +1,19 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSelector } from "react-redux";
 import MyAccount from "./MyAccount";
 import Image from "next/image";
 
 const HeaderMenuContent = ({ float = "", isAuthenticated }) => {
   const pathname = usePathname();
-  console.log(isAuthenticated);
+  const { token } = useSelector(state => state.auth);
+
   return (
     <div>
-      {isAuthenticated ? (
+      {token ? (
         <ul
           id="respMenu"
           className="ace-responsive-menu text-end d-lg-block d-none"
