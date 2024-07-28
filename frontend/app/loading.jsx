@@ -1,8 +1,9 @@
 import Loader from "@/components/Loader";
 
 const Loading = () => {
-    return(
-        <div className="w-100 h-100 relative d-flex align-items-center justify-content-cneter">
+    return (
+        <div className="d-flex align-items-center justify-content-center"
+            style={{ width: "100vw", height: "100vh" }}>
             <Loader />
         </div>
     )

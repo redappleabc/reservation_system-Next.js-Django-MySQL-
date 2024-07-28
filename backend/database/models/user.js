@@ -23,6 +23,34 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'user_uuid',
         sourceKey: 'uuid'
       })
+
+      this.hasMany(models['Service'], {
+        foreignKey: 'user_uuid',
+        sourceKey: 'uuid'
+      })
+
+      this.hasMany(models['OptionTemplate'], {
+        foreignKey: 'user_uuid',
+        sourceKey: 'uuid'
+      })
+
+      this.belongsToMany(models['Service'], {
+        through: models['ServiceViewer'],
+        as: 'ViewedServices',
+        foreignKey: 'user_uuid',
+        otherKey: 'service_uuid',
+        sourceKey: 'uuid',
+        targetKey: 'uuid',
+      })
+
+      this.belongsToMany(models['Service'], {
+        through: models['ServiceBookmarkedUser'],
+        as: 'BookmarkedServices',
+        foreignKey: 'user_uuid',
+        otherKey: 'service_uuid',
+        sourceKey: 'uuid',
+        targetKey: 'uuid'
+      })
     }
   }
   User.init({
@@ -51,6 +79,6 @@ module.exports = (sequelize, DataTypes) => {
       user.password = hashedPassword;
     }
   })
-  
+
   return User;
 };

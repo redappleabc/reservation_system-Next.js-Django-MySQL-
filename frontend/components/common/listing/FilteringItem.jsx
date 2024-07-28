@@ -1,201 +1,136 @@
 "use client";
 
-import { useEffect } from "react";
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  addFeatured,
-  addStatusType,
-} from "../../../features/filter/filterSlice";
-import {
-  addAmenities,
-  addAreaMax,
-  addAreaMin,
-  addStartDates,
-  addEndDates,
-  addStartHours,
-  addStartMinutes,
-  addEndHours,
-  addEndMinutes,
-  addKeyword,
-  addLocation,
-  addPrice,
-  addPropertyType,
-  addStatus,
-  addYearBuilt,
-  resetAmenities,
-} from "../../../features/properties/propertiesSlice";
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import PricingRangeSlider from "../../common/PricingRangeSlider";
-import { v4 as uuidv4 } from "uuid";
+import flatpickr from "flatpickr";
+import { Japanese } from "flatpickr/dist/l10n/ja";
+import 'flatpickr/dist/flatpickr.min.css';
+
+import { ServicePropertyList, AllMainCategories, AllTags, PrefectureList } from "@/utils/configInfo";
 
 const FilteringItem = () => {
-  const {
-    keyword,
-    location,
-    status,
-    propertyType,
-    startDate,
-    endDate,
-    startHour,
-    startMinute,
-    endHour,
-    endMinute,
-    yearBuilt,
-    area,
-    amenities,
-  } = useSelector((state) => state.properties);
 
-  // input state
-  const [getKeyword, setKeyword] = useState(keyword);
-  const [getLocation, setLocation] = useState(location);
-  const [getStatus, setStatus] = useState(status);
-  const [getPropertiesType, setPropertiesType] = useState(propertyType);
-  const [getStartDate, setStartDate] = useState(startDate);
-  const [getEndDate, setEndDate] = useState(endDate);
-  const [getStartHour, setStartHour] = useState(startHour);
-  const [getStartMinute, setStartMinute] = useState(startMinute);
-  const [getEndHour, setEndHour] = useState(endHour);
-  const [getEndMinute, setEndMinute] = useState(endMinute);
-  const [getBuiltYear, setBuiltYear] = useState(yearBuilt);
-  const [getAreaMin, setAreaMin] = useState(area.min);
-  const [getAreaMax, setAreaMax] = useState(area.max);
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-  // advanced state
-  const [getAdvanced, setAdvanced] = useState([
-    { id: uuidv4(), name: "初心者" },
-    { id: uuidv4(), name: "英会話" },
-    { id: uuidv4(), name: "マンツーマン" },
-    { id: uuidv4(), name: "急募" },
-    { id: uuidv4(), name: "推し活" },
-    { id: uuidv4(), name: "バーベキュー" },
-    { id: uuidv4(), name: "ママ会" },
-    { id: uuidv4(), name: "映画鑑賞" },
-    { id: uuidv4(), name: "イベント" },
-    { id: uuidv4(), name: "上映会" },
-    { id: uuidv4(), name: "コワーキング" },
-    { id: uuidv4(), name: "コスプレ撮影" },
-    { id: uuidv4(), name: "屋上撮影" },
-    { id: uuidv4(), name: "商品撮影" },
-    { id: uuidv4(), name: "ママ会" },
-  ]);
+  const initialData = {
+    keyword: searchParams.get('keyword') || "",
+    prefecture: searchParams.get('prefecture') || "",
+    serviceType: searchParams.get('serviceType') || "",
+    mainCategory: searchParams.get('mainCategory') || "",
+    startHour: searchParams.get('startHour') || "",
+    startMinute: searchParams.get('startMinute') || "",
+    endHour: searchParams.get('endHour') || "",
+    endMinute: searchParams.get('endMinute') || "",
+    paymethod: searchParams.get('paymethod') || "fixed",
+    min_point: searchParams.get('min_point') || 100,
+    max_point: searchParams.get('max_point') || 20000,
+    tags: searchParams.getAll('tags') || [],
+  }
 
-  const dispath = useDispatch();
+  const [formData, setFormData] = useState(initialData);
+  const [startDate, setStartDate] = useState(searchParams.get('startDate') || "");
+  const [endDate, setEndDate] = useState(searchParams.get('endDate') || "");
 
-  // keyword
+  const makeArray = (length) => {
+    let array = [];
+    for (let i = 0; i < length; i++) {
+      array.push(i);
+    }
+
+    return array;
+  }
+
   useEffect(() => {
-    dispath(addKeyword(getKeyword));
-  }, [dispath, getKeyword]);
+    const now = new Date();
 
-  // location
-  useEffect(() => {
-    dispath(addLocation(getLocation));
-  }, [dispath, getLocation]);
-
-  // status
-  useEffect(() => {
-    dispath(addStatus(getStatus));
-  }, [dispath, getStatus]);
-
-  // properties type
-  useEffect(() => {
-    dispath(addPropertyType(getPropertiesType));
-  }, [dispath, getPropertiesType]);
-
-  // startDate
-  useEffect(() => {
-    dispath(addStartDates(getStartDate));
-  }, [dispath, getStartDate]);
-
-  // endDate
-  useEffect(() => {
-    dispath(addEndDates(getEndDate));
-  }, [dispath, getEndDate]);
-
-  // startHour
-  useEffect(() => {
-    dispath(addStartHours(getStartHour));
-  }, [dispath, getStartHour]);
-
-  // startMinute
-  useEffect(() => {
-    dispath(addStartMinutes(getStartMinute));
-  }, [dispath, getStartMinute]);
-
-  // endHour
-  useEffect(() => {
-    dispath(addEndHours(getEndHour));
-  }, [dispath, getEndHour]);
-
-  // endMinute
-  useEffect(() => {
-    dispath(addEndMinutes(getEndMinute));
-  }, [dispath, getEndMinute]);
-
-  // built years
-  useEffect(() => {
-    dispath(addYearBuilt(getBuiltYear));
-  }, [dispath, getBuiltYear]);
-
-  // area min
-  useEffect(() => {
-    dispath(dispath(addAreaMin(getAreaMin)));
-  }, [dispath, getAreaMin]);
-
-  // area max
-  useEffect(() => {
-    dispath(dispath(addAreaMax(getAreaMax)));
-  }, [dispath, getAreaMax]);
-
-  // clear filter
-  const clearHandler = () => {
-    clearAllFilters();
-  };
-
-  const clearAllFilters = () => {
-    setKeyword("");
-    setLocation("");
-    setStatus("");
-    setPropertiesType("");
-    dispath(addPrice({ min: 10000, max: 20000 }));
-    setStartDate("");
-    setEndDate("");
-    setStartHour("");
-    setStartMinute("");
-    setEndHour("");
-    setEndMinute("");
-    setBuiltYear("");
-    setAreaMin("");
-    setAreaMax("");
-    dispath(resetAmenities());
-    dispath(addStatusType(""));
-    dispath(addFeatured(""));
-    clearAdvanced();
-  };
-
-  // clear advanced
-  const clearAdvanced = () => {
-    const changed = getAdvanced.map((item) => {
-      item.isChecked = false;
-      return item;
+    flatpickr('#datetimepicker7', {
+      wrap: true,
+      dateFormat: 'Y-m-d',
+      minuteIncrement: 1,
+      locale: Japanese,
+      clickOpens: false,
+      allowInput: true,
+      monthSelectorType: 'static',
+      defaultDate: searchParams.get('startDate') || "",
+      onValueUpdate: (selectedDates, dateStr, instance) => {
+        setStartDate(dateStr);
+      },
     });
-    setAdvanced(changed);
-  };
+    flatpickr('#datetimepicker8', {
+      wrap: true,
+      dateFormat: 'Y-m-d',
+      minuteIncrement: 1,
+      locale: Japanese,
+      clickOpens: false,
+      allowInput: true,
+      monthSelectorType: 'static',
+      defaultDate: searchParams.get('endDate') || "",
+      onValueUpdate: (selectedDates, dateStr, instance) => {
+        setEndDate(dateStr);
+      },
+    });
+  }, []);
 
-  // add advanced
-  const advancedHandler = (id) => {
-    const data = getAdvanced.map((feature) => {
-      if (feature.id === id) {
-        if (feature.isChecked) {
-          feature.isChecked = false;
-        } else {
-          feature.isChecked = true;
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('startDate', startDate);
+    router.push(`/listings?${params.toString()}`);
+  }, [startDate])
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('endDate', endDate);
+    router.push(`/listings?${params.toString()}`);
+  }, [endDate])
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const handleClickTagItem = (item) => {
+    const selectedTags = formData.tags;
+    const selectedIndex = selectedTags.findIndex(tag => tag === item.key);
+    if (selectedIndex < 0) {
+      selectedTags.push(item.key);
+    } else {
+      selectedTags.splice(selectedIndex, 1);
+    }
+    setFormData((prev) => ({
+      ...prev,
+      tags: selectedTags
+    }))
+  }
+
+  const handleClearFilter = () => {
+    setFormData(initialData);
+  }
+
+  const handleSearch = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    const entries = Object.entries(formData);
+    for (const [key, value] of entries) {
+      if (value) {
+        if (key === 'tags') {
+          params.delete(key);
+          for (const item of value) {
+            params.append(key, item);
+          }
+          continue;
         }
+        params.set(key, value);
+      } else {
+        params.delete(key);
       }
-      return feature;
-    });
-
-    setAdvanced(data);
-  };
+    }
+    const queryStr = params.toString();
+    router.push(`/listings?${queryStr}`);
+  }
 
   return (
     <ul className="sasw_list mb0">
@@ -205,8 +140,9 @@ const FilteringItem = () => {
             type="text"
             className="form-control"
             placeholder="キーワード"
-            value={getKeyword}
-            onChange={(e) => setKeyword(e.target.value)}
+            name="keyword"
+            value={formData.keyword}
+            onChange={handleInputChange}
           />
           <label>
             <span className="flaticon-magnifying-glass"></span>
@@ -215,35 +151,41 @@ const FilteringItem = () => {
       </li>
       {/* End li */}
 
-      <li className="search_area">
-        <div className="form-group mb-3">
-          <input
-            type="search"
-            className="form-control"
-            id="exampleInputEmail"
-            placeholder="場所"
-            value={getLocation}
-            onChange={(e) => setLocation(e.target.value)}
-          />
-          <label htmlFor="exampleInputEmail">
-            <span className="flaticon-maps-and-flags"></span>
-          </label>
+      <li>
+        <div className="search_option_two">
+          <div className="candidate_revew_select">
+            <select
+              className="selectpicker w100 show-tick form-select"
+              name="prefecture"
+              value={formData.prefecture}
+              onChange={handleInputChange}
+            >
+              <option value="">場所</option>
+              {
+                PrefectureList.map((item, index) => (
+                  <option key={index} value={item.key}>{item.value}</option>
+                ))
+              }
+            </select>
+          </div>
         </div>
       </li>
-      {/* End li */}
 
       <li>
         <div className="search_option_two">
           <div className="candidate_revew_select">
             <select
-              onChange={(e) => setStatus(e.target.value)}
               className="selectpicker w100 show-tick form-select"
-              value={getStatus}
+              name="serviceType"
+              value={formData.serviceType}
+              onChange={handleInputChange}
             >
               <option value="">サービスの種類</option>
-              <option value="school">スクール</option>
-              <option value="hotel">ホテル（民泊）</option>
-              <option value="arbite">アルバイト</option>
+              {
+                ServicePropertyList.map((item, index) => (
+                  <option key={index} value={item.key}>{item.name}</option>
+                ))
+              }
             </select>
           </div>
         </div>
@@ -254,22 +196,51 @@ const FilteringItem = () => {
         <div className="search_option_two">
           <div className="candidate_revew_select">
             <select
-              onChange={(e) => setPropertiesType(e.target.value)}
               className="selectpicker w100 show-tick form-select"
-              value={getPropertiesType}
+              name="mainCategory"
+              value={formData.mainCategory}
+              onChange={handleInputChange}
             >
               <option value="">カテゴリ検索</option>
-              <option value="category01">カテゴリー1</option>
-              <option value="category02">カテゴリー2</option>
-              <option value="category03">カテゴリー3</option>
-              <option value="category04">カテゴリー4</option>
-              <option value="category05">カテゴリー5</option>
-              <option value="category06">カテゴリー6</option>
+              {
+                AllMainCategories.map((item, index) => (
+                  <option key={index} value={item.key}>{item.name}</option>
+                ))
+              }
             </select>
           </div>
         </div>
       </li>
       {/* End li */}
+
+      <li className='mt-4'>
+        <span>お支払い方法</span>
+        <div className="form-group row align-items-center justify-content-center mx-0 my-2">
+          <div className='row align-items-center justify-content-center' style={{ padding: '0px' }} >
+            <div className="form-check col">
+              <input className="form-check-input" type="checkbox" name="paymethod" id="flexRadioDefault1"
+                value="minutely" checked={formData.paymethod === 'minutely'} onChange={handleInputChange} />
+              <label className="form-check-label" htmlFor="flexRadioDefault1">
+                毎分
+              </label>
+            </div>
+            <div className="form-check col">
+              <input className="form-check-input" type="checkbox" name="paymethod" id="flexRadioDefault2"
+                value="daily" checked={formData.paymethod === 'daily'} onChange={handleInputChange} />
+              <label className="form-check-label" htmlFor="flexRadioDefault2">
+                一日
+              </label>
+            </div>
+            <div className="form-check col">
+              <input className="form-check-input" type="checkbox" name="paymethod" id="flexRadioDefault3"
+                value="fixed" checked={formData.paymethod === 'fixed'} onChange={handleInputChange} />
+              <label className="form-check-label" htmlFor="flexRadioDefault3">
+                固定
+              </label>
+            </div>
+          </div>
+        </div>
+      </li>
 
       <li>
         <div className="small_dropdown2">
@@ -287,63 +258,135 @@ const FilteringItem = () => {
           </div>
           <div className="dd_content2 style2 dropdown-menu">
             <div className="pricing_acontent ">
-              <PricingRangeSlider />
+              <PricingRangeSlider formData={formData} setFormData={setFormData} />
             </div>
           </div>
         </div>
       </li>
-      
 
       <li>
-        <div className="search_option_two">
-          <div className="candidate_revew_select">
-            <select
-              onChange={(e) => setBuiltYear(e.target.value)}
-              className="selectpicker w100 show-tick form-select"
-              value={getBuiltYear}
-            >
-              <option value="">Year built</option>
-              <option value="2013">2013</option>
-              <option value="2014">2014</option>
-              <option value="2015">2015</option>
-              <option value="2016">2016</option>
-              <option value="2017">2017</option>
-              <option value="2018">2018</option>
-              <option value="2019">2019</option>
-              <option value="2020">2020</option>
-            </select>
+        <div className="input-group date mb-3" id="datetimepicker7" data-target-input="nearest">
+          <label htmlFor="datetimepicker7" className="pt-2 pr-2">開始日:</label>
+          <div className="d-flex">
+            <input type="text" data-input aria-hidden="false" className="form-control" data-target="#datetimepicker7" style={{ background: 'white' }} />
+            <span className="input-group-text" data-toggle>
+              <span className="fa fa-calendar"></span>
+            </span>
           </div>
         </div>
       </li>
-      {/* End li */}
 
-      <li className="min_area list-inline-item">
-        <div className="form-group mb-4">
-          <input
-            type="number"
-            className="form-control"
-            id="exampleInputName2"
-            placeholder="Min Area"
-            value={getAreaMin}
-            onChange={(e) => setAreaMin(e.target.value)}
-          />
+      <li>
+        <div className="input-group date mb-3" id="datetimepicker8" data-target-input="nearest">
+          <label htmlFor="datetimepicker8" className="pt-2 pr-2">終了日:</label>
+          <div className="d-flex">
+            <input type="text" data-input className="form-control" data-target="#datetimepicker8" style={{ background: 'white' }} />
+            <span className="input-group-text" data-toggle>
+              <span className="fa fa-calendar"></span>
+            </span>
+          </div>
         </div>
       </li>
-      {/* End li */}
 
-      <li className="max_area list-inline-item">
-        <div className="form-group mb-4">
-          <input
-            type="number"
-            className="form-control"
-            id="exampleInputName3"
-            placeholder="Max Area"
-            value={getAreaMax}
-            onChange={(e) => setAreaMax(e.target.value)}
-          />
+      <li>
+        <label className="pt-2 pr-2">開始時</label>
+        <br />
+        <div className="d-flex justify-content-between align-items-center">
+          <div className="search_option_two" style={{ width: '47%' }}>
+            <div className="candidate_revew_select">
+              <select
+                className="selectpicker w100 show-tick form-select"
+                name="startHour"
+                value={formData.startHour}
+                onChange={handleInputChange}
+              >
+                <option value="">時</option>
+                {
+                  makeArray(24).map((item, index) => (
+                    <option key={index} value={index}>
+                      {
+                        index < 10 ? '0' + index : index
+                      }
+                    </option>
+                  ))
+                }
+              </select>
+            </div>
+          </div>
+          <span className="flex-1 text-center">:</span>
+          <div className="search_option_two" style={{ width: '47%' }}>
+            <div className="candidate_revew_select">
+              <select
+                className="selectpicker w100 show-tick form-select"
+                name="startMinute"
+                value={formData.startMinute}
+                onChange={handleInputChange}
+              >
+                <option value="">分</option>
+                {
+                  makeArray(60).map((item, index) => (
+                    <option key={index} value={index}>
+                      {
+                        index < 10 ? '0' + index : index
+                      }
+                    </option>
+                  ))
+                }
+              </select>
+            </div>
+          </div>
         </div>
       </li>
-      {/* End li */}
+
+      <li>
+        <label className="pt-2 pr-2">終了時</label>
+        <br />
+        <div className="d-flex justify-content-between align-items-center">
+          <div className="search_option_two" style={{ width: '47%' }}>
+            <div className="candidate_revew_select">
+              <select
+                className="selectpicker w100 show-tick form-select"
+                name="endHour"
+                value={formData.endHour}
+                onChange={handleInputChange}
+              >
+                <option value="">時</option>
+                {
+                  makeArray(24).map((item, index) => (
+                    <option key={index} value={index}>
+                      {
+                        index < 10 ? '0' + index : index
+                      }
+                    </option>
+                  ))
+                }
+              </select>
+            </div>
+          </div>
+          <span className="flex-1 text-center px-2">:</span>
+          <div className="search_option_two" style={{ width: '47%' }}>
+            <div className="candidate_revew_select">
+              <select
+                className="selectpicker w100 show-tick form-select"
+                name="endMinute"
+                value={formData.endMinute}
+                onChange={handleInputChange}
+              >
+                <option value="">分</option>
+                {
+                  makeArray(60).map((item, index) => (
+                    <option key={index} value={index}>
+                      {
+                        index < 10 ? '0' + index : index
+                      }
+                    </option>
+                  ))
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+      </li>
 
       <li>
         <div id="accordion" className="panel-group">
@@ -366,29 +409,28 @@ const FilteringItem = () => {
               <div className="panel-body row">
                 <div className="col-lg-12">
                   <ul className="ui_kit_checkbox selectable-list fn-400">
-                    {getAdvanced?.map((feature) => (
-                      <li key={feature.id}>
-                        <div className="form-check custom-checkbox">
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            id={feature.id}
-                            value={feature.name}
-                            checked={feature.isChecked || false}
-                            onChange={(e) =>
-                              dispath(addAmenities(e.target.value))
-                            }
-                            onClick={() => advancedHandler(feature.id)}
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor={feature.id}
-                          >
-                            {feature.name}
-                          </label>
-                        </div>
-                      </li>
-                    ))}
+                    {
+                      AllTags.map((item, index) => (
+                        <li key={index}>
+                          <div className="form-check custom-checkbox">
+                            <input
+                              type="checkbox"
+                              className="form-check-input"
+                              id={item.key}
+                              value={item.key}
+                              checked={formData.tags.some(tag => tag === item.key)}
+                              onChange={() => handleClickTagItem(item)}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor={item.key}
+                            >
+                              {item.name}
+                            </label>
+                          </div>
+                        </li>
+                      ))
+                    }
                   </ul>
                 </div>
               </div>
@@ -401,11 +443,25 @@ const FilteringItem = () => {
       <li>
         <div className="search_option_button">
           <button
-            onClick={clearHandler}
+            className="btn btn-thm reservation-btn"
+            style={{ width: '100%' }}
+            onClick={handleSearch}
+          >
+            検索
+          </button>
+        </div>
+      </li>
+
+      <li style={{
+        marginTop: '10px'
+      }}>
+        <div className="search_option_button">
+          <button
             type="button"
             className="btn btn-block btn-thm w-100"
+            onClick={handleClearFilter}
           >
-            Clear Filters
+            クリア
           </button>
         </div>
       </li>

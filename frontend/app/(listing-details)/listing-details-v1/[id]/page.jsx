@@ -1,4 +1,7 @@
+"use client";
 
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 
 import "photoswipe/dist/photoswipe.css";
 import CopyrightFooter from "@/components/common/footer/CopyrightFooter";
@@ -11,10 +14,25 @@ import DetailsContent from "@/components/listing-details-v1/DetailsContent";
 import Sidebar from "@/components/listing-details-v1/Sidebar";
 import ListingOne from "@/components/listing-single/ListingOne";
 
-const ListingDynamicDetailsV1 = ({params}) => {
- 
+import { frontendAxiosInstance } from "@/utils/http-common";
+
+const ListingDynamicDetailsV1 = ({ params }) => {
+
   const id = params.id;
-  const property = properties?.find((item) => item.id == id) || properties[0]
+
+  const [service, setService] = useState({});
+  const [viewersCount, setViewersCount] = useState(0);
+
+  const fetchServiceDetailInfo = async (serviceId) => {
+    try {
+      const res = await frontendAxiosInstance.get(`allService/detail/${serviceId}`);
+      const serviceInfo = res.data.result.service;
+      setService(serviceInfo);
+      setViewersCount(res.data.result.viewersCount);
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   return (
     <>
@@ -29,7 +47,7 @@ const ListingDynamicDetailsV1 = ({params}) => {
 
       {/* <!-- Listing Single Property --> */}
       <ListingOne property={property} />
-    
+
 
       {/* <!-- Agent Single Grid View --> */}
       <section className="our-agent-single bgc-f7 pb30-991">

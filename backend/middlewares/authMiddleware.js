@@ -1,8 +1,12 @@
 const jwt = require('jsonwebtoken');
 
-const requireAuth = (req, res, next) => {
-  const token = req.cookies.token;
+const { db } = require("../database/config/database");
 
+const User = db['User'];
+
+const requireAuth = async (req, res, next) => {
+  const token = req.cookies.token;
+  
   if (!token) {
     return res.status(401).json({
       message: 'Unauthorized'
@@ -11,7 +15,11 @@ const requireAuth = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
-    req.user = decoded;
+    req.user = await User.findOne({
+      where: {
+        email: decoded.email
+      }
+    })
     next();
   } catch (err) {
     return res.status(403).json({

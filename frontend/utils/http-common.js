@@ -1,7 +1,15 @@
 import axios from "axios";
 
-const axiosInstance = axios.create({
-  baseURL: "http://localhost:8000/api",
+export const backendAxiosInstance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  // baseURL: "http://160.251.232.166/api",
+  headers: {
+  },
+  withCredentials: true,
+})
+
+export const frontendAxiosInstance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_FRONTEND_SERVER_URL,
   // baseURL: "http://160.251.232.166/api",
   headers: {
   },
@@ -15,12 +23,10 @@ const axiosInstance = axios.create({
 //       config.headers['Authorization'] = 'Bearer ' + token;
 //     }
 
-//     // config.headers['Content-Type'] = 'application/json';
+// config.headers['Content-Type'] = 'application/json';
 //     return config;
 //   },
 //   error => {
 //     Promise.reject(error)
 //   }
 // )
-
-export default axiosInstance;

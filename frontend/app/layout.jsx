@@ -1,22 +1,22 @@
-'use client';
+"use client"
 
 import { useState, useEffect } from "react";
-import { Provider, useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { Provider } from "react-redux";
 import { store } from "../store/store";
 import ScrollToTop from "../components/common/ScrollTop";
 import "../public/assets/scss/index.scss";
 import { Noto_Sans_JP } from "next/font/google";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
-import Footer from "../components/common/footer/Footer";
 import Header from "../components/common/header/Header";
 import MobileMenu from "../components/common/header/MobileMenu";
 import PopupSignInUp from "../components/common/PopupSignInUp";
-import SidebarMenu from "../components/common/header/SidebarMenu";
-import { usePathname } from 'next/navigation';
 import ToasterProvider from "./providers/ToasterProvider";
+import Loading from "./loading";
 
-import { loginWithToken } from "@/store/slices/authSlice";
+import { setUserAndAuthenticate } from "@/store/slices/authSlice";
+import { frontendAxiosInstance } from "@/utils/http-common";
 
 config.autoAddCss = false;
 
@@ -31,18 +31,31 @@ if (typeof window !== "undefined") {
 }
 
 const AppContent = ({ children }) => {
-  const dispatch = useDispatch();
-  const { token } = useSelector(state => state.auth);
 
-  const [initialize, setInitialize] = useState(true);
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchToken = async () => {
+    try {
+      const res = await frontendAxiosInstance.get('auth/get-token');
+      const isAuthenticate = res.data.isAuthenticate;
+      const user = res.data.user;
+      dispatch(setUserAndAuthenticate({ isAuthenticate, user }));
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   useEffect(() => {
-    dispatch(loginWithToken());
+    fetchToken();
+    setIsLoading(false);
   }, [])
 
-  const pathname = usePathname();
-
-  const isContainedDashboard = pathname.includes('dashboard');
+  if (isLoading) {
+    return (
+      <Loading />
+    )
+  }
 
   return (
     <>
@@ -51,7 +64,6 @@ const AppContent = ({ children }) => {
       <MobileMenu />
       <PopupSignInUp />
       {children}
-      {!isContainedDashboard && <Footer />}
     </>
   )
 }

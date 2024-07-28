@@ -119,6 +119,19 @@ html {
   font-size: 100%;
 }
 
+/* html {
+  font-size: 0.76923vw;
+  font-family: KozGoPr6N-Regular;
+  font-size: clamp(6px, 0.76923vw, 10px);
+  margin: 0;
+}
+@media print, screen and (max-width: 641px) {
+  html {
+    font-size: 1.5625vw;
+    font-size: clamp(6px, 1.5625vw, 10px);
+  }
+} */
+
 body {
   background-attachment: fixed;
   background-color: #ffffff;
@@ -2820,7 +2833,7 @@ header.header-nav.menu_style_home_seven .ace-responsive-menu>li.last {
   color: #484848;
   line-height: 1.2;
   height: 50px;
-  width: 215px;
+  width: 160px;
 }
 
 .home1-advnc-search.home2.style2 ul li:first-child .form-control::placeholder,
@@ -2944,7 +2957,7 @@ header.header-nav.menu_style_home_seven .ace-responsive-menu>li.last {
   font-weight: bold;
   line-height: 1.2;
   height: 50px;
-  width: 170px;
+  width: 150px;
   -webkit-transition: all 0.3s ease;
   -moz-transition: all 0.3s ease;
   -o-transition: all 0.3s ease;
@@ -3324,7 +3337,13 @@ form.home5_advanced_search_form .form-group input.form-control::-ms-input-placeh
   margin: 0;
   outline: none;
   text-align: left;
-  width: 150px;
+  width: 180px;
+}
+
+@media screen and (min-width: 1024px) {
+  .small_dropdown2 .dd_btn {
+    width: 160px !important;
+  }
 }
 
 .small_dropdown .dd_btn label,
@@ -7886,6 +7905,11 @@ form.home5_advanced_search_form .form-group input.form-control::-ms-input-placeh
 }
 
 .view_edit_delete_list li a span {
+  color: var(--color-primary);
+  font-size: 20px;
+}
+
+.view_edit_delete_list li button span {
   color: var(--color-primary);
   font-size: 20px;
 }
@@ -14780,7 +14804,6 @@ legend span {
   width: 100%;
   overflow: hidden;
   cursor: pointer;
-  background-image: url(../images/team/upload_photo.jpg);
   border-radius: 5px;
   -webkit-transition: -webkit-transform 0.4s;
   transition: -webkit-transform 0.4s;
@@ -15898,11 +15921,10 @@ legend span {
 }
 
 .btn-thm:hover,
-.btn-thm:active,
-.btn-thm:focus {
+.btn-thm:active {
   background-color: #ffffff;
   border-color: var(--color-primary);
-  color: var(--color-primary);
+  color: #ffffff;
 }
 
 .btn-thm.white:hover,
@@ -20118,4 +20140,81 @@ button.gm-ui-hover-effect:focus {
 
 .logout span {
   padding-left: 8px;
+}
+
+.btn-enable {
+  cursor: pointer;
+}
+
+.bth-disable:hover {
+  cursor: not-allowed;
+}
+
+.btn-customize-primary {
+  width: 120px;
+  border-radius: 5px;
+  border: 1px solid rgb(52, 82, 255);
+  padding: 5px;
+  background-color: rgb(52, 82, 255);
+  text-align: center;
+  color: white;
+}
+
+.btn-customize-primary:hover,
+.btn-customize-primary:active,
+.btn-customize-primary:focus {
+  background-color: white;
+  color: rgb(52, 82, 255);
+}
+
+.scrollbar-container-other::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-container::-webkit-scrollbar {
+  width: 5px; 
+  height: 20px;
+}
+
+/* Track */
+.scrollbar-container::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color of the track */
+}
+
+/* Handle */
+.scrollbar-container::-webkit-scrollbar-thumb {
+  background: #888; /* Color of the scrollbar handle */
+}
+
+/* Handle on hover */
+.scrollbar-container::-webkit-scrollbar-thumb:hover {
+  cursor: pointer;
+  display: block;
+  background: #555; /* Color of the scrollbar handle when hovered */
+}
+
+.scrollbar-x-container-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-x-container::-webkit-scrollbar {
+  width: 20px; 
+  height: 5px;
+}
+
+/* Track */
+.scrollbar-x-container::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color of the track */
+}
+
+/* Handle */
+.scrollbar-x-container::-webkit-scrollbar-thumb {
+  background: #888; /* Color of the scrollbar handle */
+}
+
+/* Handle on hover */
+.scrollbar-x-container::-webkit-scrollbar-thumb:hover {
+  cursor: pointer;
+  display: block;
+  background: #555; /* Color of the scrollbar handle when hovered */
 }

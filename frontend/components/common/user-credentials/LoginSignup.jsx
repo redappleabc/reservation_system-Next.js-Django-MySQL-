@@ -27,7 +27,7 @@ const LoginSignup = () => {
         <div className="row">
           <div className="col-lg-12">
             <ul className="sign_up_tab nav nav-tabs" id="myTab" role="tablist">
-              <li className="nav-item">
+              <li className="nav-item" role="tab">
                 <a
                   className="nav-link active"
                   id="home-tab"
@@ -40,7 +40,7 @@ const LoginSignup = () => {
                   ログイン
                 </a>
               </li>
-              <li className="nav-item">
+              <li className="nav-item" role="tab">
                 <a
                   className="nav-link"
                   id="profile-tab"

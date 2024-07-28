@@ -1,0 +1,112 @@
+exports.PrefectureList = [
+  { key: "hokkaido", value: "北海道" },
+  { key: "aomori", value: "青森県" },
+  { key: "iwate", value: "岩手県" },
+  { key: "miyagi", value: "宮城県" },
+  { key: "akita", value: "秋田県" },
+  { key: "yamagata", value: "山形県" },
+  { key: "fukushima", value: "福島県" },
+  { key: "ibaraki", value: "茨城県" },
+  { key: "tochigi", value: "栃木県" },
+  { key: "gunma", value: "群馬県" },
+  { key: "saitama", value: "埼玉県" },
+  { key: "chiba", value: "千葉県" },
+  { key: "tokyo", value: "東京都" },
+  { key: "kanagawa", value: "神奈川県" },
+  { key: "niigata", value: "新潟県" },
+  { key: "toyama", value: "富山県" },
+  { key: "ishikawa", value: "石川県" },
+  { key: "fukui", value: "福井県" },
+  { key: "yamanashi", value: "山梨県" },
+  { key: "nagano", value: "長野県" },
+  { key: "gifu", value: "岐阜県" },
+  { key: "shizuoka", value: "静岡県" },
+  { key: "aichi", value: "愛知県" },
+  { key: "mie", value: "三重県" },
+  { key: "shiga", value: "滋賀県" },
+  { key: "kyoto", value: "京都府" },
+  { key: "osaka", value: "大阪府" },
+  { key: "hyogo", value: "兵庫県" },
+  { key: "nara", value: "奈良県" },
+  { key: "wakayama", value: "和歌山県" },
+  { key: "tottori", value: "鳥取県" },
+  { key: "shimane", value: "島根県" },
+  { key: "okayama", value: "岡山県" },
+  { key: "hiroshima", value: "広島県" },
+  { key: "yamaguchi", value: "山口県" },
+  { key: "tokushima", value: "徳島県" },
+  { key: "kagawa", value: "香川県" },
+  { key: "ehime", value: "愛媛県" },
+  { key: "kochi", value: "高知県" },
+  { key: "fukuoka", value: "福岡県" },
+  { key: "saga", value: "佐賀県" },
+  { key: "nagasaki", value: "長崎県" },
+  { key: "kumamoto", value: "熊本県" },
+  { key: "oita", value: "大分県" },
+  { key: "miyazaki", value: "宮崎県" },
+  { key: "kagoshima", value: "鹿児島県" },
+  { key: "okinawa", value: "沖縄県" }
+]
+
+exports.ServiceHourList = [
+  {
+    key: '15m',
+    value: 15,
+  },
+  {
+    key: '30m',
+    value: 30,
+  },
+  {
+    key: '45m',
+    value: 45,
+  },
+  {
+    key: '1h',
+    value: 60,
+  },
+  {
+    key: '90m',
+    value: 90,
+  },
+  {
+    key: '2h',
+    value: 120,
+  },
+  {
+    key: '3h',
+    value: 189,
+  },
+  {
+    key: '4h',
+    value: 240,
+  },
+  {
+    key: '6h',
+    value: 360,
+  },
+  {
+    key: '9h',
+    value: 540,
+  },
+  {
+    key: '12h',
+    value: 720,
+  },
+  {
+    key: '15h',
+    value: 900,
+  },
+  {
+    key: '18h',
+    value: 1080,
+  },
+  {
+    key: '21h',
+    value: 1260,
+  },
+  {
+    key: '1d',
+    value: 1440,
+  },
+]

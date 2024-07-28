@@ -1,49 +1,121 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
-import { login, resetStatus } from "@/store/slices/authSlice";
+import { frontendAxiosInstance } from "@/utils/http-common";
+import { setUserAndAuthenticate } from "@/store/slices/authSlice";
+
 import { toastOption } from "@/utils/toastOption";
 
 const Login = ({ onClose }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setError,
-  } = useForm();
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   formState: { errors },
+  //   setError,
+  // } = useForm();
 
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const { login_status, errorMessage } = useSelector(state => state.auth);
+  const [email, setEmail] = useState("");
+  const [isValidEmail, setIsValidEmail] = useState(false);
+  const [isFocusEmailField, setIsFocusEmailField] = useState(false);
+  const [errorEmailMessage, setErrorEmailMessage] = useState("");
 
-  const onSubmit = (data) => {
-    console.log(data);
-    dispatch(login(data));
-  };
+  const [password, setPassword] = useState("");
+  const [isValidPassword, setIsValidPassword] = useState(false);
+  const [isFocusPasswordField, setIsFocusPasswordField] = useState(false);
+  const [errorPasswordMessage, setErrorPasswordMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [isChecked, setIsChecked] = useState(false);
+
+  const [isValid, setIsValid] = useState(false);
+  const [error, setError] = useState("");
+
+  const emailValidator = (email) => {
+    if (email.length === 0) {
+      setErrorEmailMessage("メールアドレスを入力する必要があります。");
+      setIsValidEmail(false);
+      return;
+    }
+    const emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailReg.test(email)) {
+      setErrorEmailMessage("メールアドレスが正しくありません。");
+      setIsValidEmail(false);
+      return;
+    }
+    setErrorEmailMessage("");
+    setIsValidEmail(true);
+  }
+
+  const passwordValidator = (password) => {
+    const uppercaseRegExp = /[A-Z]/g;
+    const specialCharacterRegExp = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
+
+    if ((password.length < 8) || ((password.match(uppercaseRegExp) || []).length < 1) || (!specialCharacterRegExp.test(password))) {
+      setErrorPasswordMessage("大文字、英、数字、記号を各1つ以上かつ8文字以上入力");
+      setIsValidPassword(false);
+      return;
+    }
+    setErrorPasswordMessage("");
+    setIsValidPassword(true);
+  }
 
   useEffect(() => {
-    switch (login_status) {
-      case 'success':
-        toast.success(errorMessage, toastOption);
-        onClose();
-        break;
-      case 'failed':
-        toast.error(errorMessage, toastOption);
-        break;
-      default:
-        break;
+    emailValidator(email);
+  }, [email])
+
+  useEffect(() => {
+    passwordValidator(password);
+  }, [password])
+
+  useEffect(() => {
+    if (isValidEmail && isValidPassword) {
+      setIsValid(true);
+    } else {
+      setIsValid(false);
     }
-  }, [login_status])
+  }, [isValidEmail, isValidPassword])
+
+  const handleSubmit = async () => {
+    if (isValid) {
+      try {
+        const data = {
+          email,
+          password
+        }
+        const res = await frontendAxiosInstance.post("auth/login", data);
+        toast.success(res.data.message, toastOption);
+        setError("");
+        const user = res.data.result.user;
+        const payload = {
+          isAuthenticate: true,
+          user,
+        }
+        if (user.role !== 'buyer') {
+          router.push('/dashboard');
+        }
+        dispatch(setUserAndAuthenticate(payload));
+        onClose();
+      } catch (err) {
+        setError(err.response?.data?.error);
+        toast.error(err.response?.data?.error, toastOption);
+      }
+    } else {
+      return;
+    }
+  }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <div>
 
       <div className="heading text-center">
         <h3>ログイン</h3>
@@ -55,14 +127,17 @@ const Login = ({ onClose }) => {
         </p>
       </div>
 
-      <div className="d-flex flex-column gap-2">
-        <div className="input-group mb-2 mr-sm-2">
+      <div className="d-flex flex-column">
+        <div className="form-group input-group">
           <input
             type="text"
             className="form-control"
+            style={{ marginBottom: '5px' }}
             name="email"
-            {...register("email", { required: true })}
+            value={email}
             placeholder="メールアドレス"
+            onChange={(e) => setEmail(e.target.value)}
+            onBlur={() => setIsFocusEmailField(true)}
           />
           <div className="input-group-prepend">
             <div className="input-group-text">
@@ -70,29 +145,40 @@ const Login = ({ onClose }) => {
             </div>
           </div>
         </div>
-        {errors.email && (
-          <span className="text-xs text-red-600">Email is required</span>
-        )}
+        <div>
+          {
+            !isValidEmail && isFocusEmailField && (
+              <p className="small text-danger">{errorEmailMessage}</p>
+            )
+          }
+        </div>
       </div>
 
-      <div className="d-flex flex-column gap-2">
+      <div className="d-flex flex-column mt-2">
         <div className="input-group form-group">
           <input
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             className="form-control"
+            style={{ marginBottom: '5px' }}
             name="password"
-            {...register("password", { required: true })}
+            value={password}
             placeholder="パスワード"
+            onChange={(e) => setPassword(e.target.value)}
+            onBlur={() => setIsFocusPasswordField(true)}
           />
-          <div className="input-group-prepend">
-            <div className="input-group-text">
-              <i className="flaticon-password"></i>
-            </div>
+          <div className="input-group-prepend d-flex flex-row">
+            <button className="input-group-text" onClick={() => setShowPassword(!showPassword)}>
+              <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+            </button>
           </div>
         </div>
-        {errors.password && (
-          <span className="text-xs text-red-600">Password is required</span>
-        )}
+        <div className="text-xs text-danger">
+          {
+            !isValidPassword && isFocusPasswordField && (
+              <p className="text-xs text-danger">{errorPasswordMessage}</p>
+            )
+          }
+        </div>
       </div>
 
       <div className="form-group form-check custom-checkbox mb-3">
@@ -101,6 +187,8 @@ const Login = ({ onClose }) => {
           type="checkbox"
           value=""
           id="remeberMe"
+          checked={isChecked}
+          onChange={() => setIsChecked(!isChecked)}
         />
         <label
           className="form-check-label form-check-label"
@@ -116,7 +204,12 @@ const Login = ({ onClose }) => {
       >
         パスワードを忘れた方はこちら
       </Link>
-      <button type="submit" className="btn btn-log w-100 btn-thm">
+      <button type="button" className="btn btn-log w-100 btn-thm"
+        style={{
+          cursor: isValid ? "pointer" : "not-allowed",
+        }}
+        disabled={!isValid}
+        onClick={handleSubmit}>
         ログイン
       </button>
       <div className="divide">
@@ -125,15 +218,19 @@ const Login = ({ onClose }) => {
       </div>
       <div className="row mt25">
         <div className="col-lg-12">
-          <button type="submit" className="btn btn-googl w-100">
+          <button type="button" className="btn btn-googl w-100">
             <i className="fa fa-google float-start mt5"></i>Googleでログイン
           </button>
         </div>
       </div>
-      {errors.root && (
-        <span className="text-xs text-red-600">{errors.root.message}</span>
-      )}
-    </form>
+      <div>
+        {
+          error && (
+            <p className="mt-2 text-center text-danger fw-semibold fs-6">{error}</p>
+          )
+        }
+      </div>
+    </div>
   );
 };
 

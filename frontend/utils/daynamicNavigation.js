@@ -3,6 +3,7 @@
 /* -------------------------------------------------------------------------- */
 
 export function isSinglePageActive(path, match) {
+
     if (path && match) {
         if (path === match) {
             return true;

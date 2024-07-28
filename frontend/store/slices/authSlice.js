@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import http from "../../utils/http-common";
+import { frontendAxiosInstance } from "../../utils/http-common";
 
 export const login = createAsyncThunk(
   'auth/login',
   async (payload, { rejectWithValue }) => {
     try {
-      const res = await http.post('auth/login', payload);
+      const res = await frontendAxiosInstance.post('auth/login', payload);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -17,7 +17,7 @@ export const signup = createAsyncThunk(
   'auth/signup',
   async (payload, { rejectWithValue }) => {
     try {
-      const res = await http.post('auth/signup', payload);
+      const res = await frontendAxiosInstance.post('auth/signup', payload);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -29,7 +29,7 @@ export const loginWithToken = createAsyncThunk(
   'auth/login_with_token',
   async (payload, { rejectWithValue }) => {
     try {
-      const res = await http.get('auth/login_with_token');
+      const res = await frontendAxiosInstance.get('auth/login_with_token');
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -41,7 +41,7 @@ export const logout = createAsyncThunk(
   'auth/logout',
   async (payload, { rejectWithValue }) => {
     try {
-      const res = await http.get('auth/logout');
+      const res = await frontendAxiosInstance.get('auth/logout');
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -52,6 +52,7 @@ export const logout = createAsyncThunk(
 const initialState = {
   user: null,
   token: "",
+  isAuthenticate: false,
 
   signup_status: "",
   login_status: "",
@@ -74,6 +75,7 @@ export const authSlice = createSlice({
       state.login_with_token_status = "";
       state.logout_status = "";
       state.errorMessage = "";
+      state.isAuthenticate = false;
     },
     resetStatus: (state) => {
       state.signup_status = "";
@@ -81,7 +83,14 @@ export const authSlice = createSlice({
       state.login_with_token_status = "";
       state.logout_status = "";
       state.errorMessage = "";
-    }
+    },
+    setAuthenticate: (state, action) => {
+      state.isAuthenticate = action.payload.isAuthenticate;
+    },
+    setUserAndAuthenticate: (state, action) => {
+      state.user = action.payload.user;
+      state.isAuthenticate = action.payload.isAuthenticate;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -147,5 +156,5 @@ export const authSlice = createSlice({
   }
 })
 
-export const { resetAuth, resetStatus } = authSlice.actions;
+export const { resetAuth, resetStatus, setAuthenticate, setUserAndAuthenticate } = authSlice.actions;
 export default authSlice.reducer;

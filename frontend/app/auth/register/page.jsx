@@ -11,16 +11,13 @@ import Register from "@/components/Register";
 export default function Home() {
   return (
     <>
-      {/* <Header /> */}
-      <MobileMenu />
-      <PopupSignInUp />
       <BreadCrumbBanner />
       <section className="our-log bgc-fa">
         <div className="container">
           <div className="row">
             <div className="col-sm-12 col-lg-6 offset-lg-3">
               <div className="login_form  inner_page">
-                <Register />
+                <Register onClose={() => { return; }} />
               </div>
             </div>
           </div>

@@ -1,4 +1,7 @@
-import { useSelector, useDispatch } from "react-redux";
+"use client";
+
+import { useState, useEffect } from "react";
+
 import HeroSlider from "@/components/HeroSlider";
 import GlobalHeroFilter from "@/components/common/GlobalHeroFilter";
 import FeaturedProperties from "@/components/FeaturedProperties";
@@ -7,6 +10,10 @@ import CheckBoxFilter from "@/components/common/CheckBoxFilter";
 import Blogs from "@/components/common/Blogs";
 
 export default function Home() {
+
+  const [tags, setTags] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+
   return (
     <div className="row">
       <div className="home-four ">
@@ -48,7 +55,7 @@ export default function Home() {
           <div className="row">
             <div className="col-lg-12">
               <div className="best_property_slider gutter-x15">
-                <FeaturedProperties />
+                <FeaturedProperties type='ranking' category="" />
               </div>
             </div>
           </div>
@@ -69,7 +76,7 @@ export default function Home() {
           <div className="row">
             <div className="col-lg-12">
               <div className="best_property_slider gutter-x15">
-                <FeaturedProperties />
+                <FeaturedProperties type='recent' category="" />
               </div>
             </div>
           </div>
@@ -88,17 +95,17 @@ export default function Home() {
             </div>
           </div>
           <div className="row mb50 d-flex align-items-center justify-content-center">
-            <CategoryList />
+            <CategoryList category={selectedCategory} setCategory={setSelectedCategory} />
           </div>
           <div className="row">
             <div className="col-lg-12">
               <div className="best_property_slider gutter-x15">
-                <FeaturedProperties />
+                <FeaturedProperties type='category' category={selectedCategory} />
               </div>
             </div>
           </div>
           <div className="checkbox-list d-flex mt60">
-            <CheckBoxFilter />
+            <CheckBoxFilter tags={tags} setTags={setTags} />
           </div>
         </div>
       </section>

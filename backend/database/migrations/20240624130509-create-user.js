@@ -57,6 +57,7 @@ module.exports = {
       uuid: uuid(),
       email: process.env.ADMIN_EMAIL,
       password: hashedPassword,
+      display_name: 'Admin',
       role: 'admin',
       createdAt: new Date(),
       updatedAt: new Date()

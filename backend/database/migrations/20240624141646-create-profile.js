@@ -19,6 +19,9 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
+      avatar: {
+        type: Sequelize.STRING,
+      },
       lastname: {
         type: Sequelize.STRING,
         allowNull: false
@@ -38,10 +41,7 @@ module.exports = {
         }
       },
       gender: {
-        type: Sequelize.ENUM,
-        allowNull: false,
-        values: ['m','f','p'],
-        allowNull: 'p'
+        type: Sequelize.STRING,
       },
       phone_number: {
         type: Sequelize.STRING

@@ -1,11 +1,20 @@
 'use client';
 
-import React, {useEffect} from 'react';
+import React, { useEffect, useState } from 'react';
 import flatpickr from 'flatpickr';
+import { Japanese } from 'flatpickr/dist/l10n/ja';
 import 'flatpickr/dist/flatpickr.min.css';
+import { format } from 'date-fns';
 
 
-const Calendar = () => {
+const Calendar = ({ formData, setFormData }) => {
+
+  const [startDate, setStartDate] = useState(formData['startDate'] || "");
+  const [endDate, setEndDate] = useState(formData['endDate'] || "");
+  const [startHour, setStartHour] = useState(formData['startHour'] || "");
+  const [startMinute, setStartMinute] = useState(formData['startMinute'] || "");
+  const [endHour, setEndHour] = useState(formData['endHour'] || "");
+  const [endMinute, setEndMinute] = useState(formData['endMinute'] || "");
 
   useEffect(() => {
     const now = new Date();
@@ -17,10 +26,16 @@ const Calendar = () => {
       defaultHour: now.getHours(),
       defaultMinute: now.getMinutes(),
       minuteIncrement: 1,
-      locale: 'en',
+      locale: Japanese,
       clickOpens: false,
       allowInput: true,
-      monthSelectorType: 'static'
+      monthSelectorType: 'static',
+      onChange: (selectedDates, dateStr, instance) => {
+        const startDate = new Date(dateStr);
+        setStartDate(format(startDate, 'yyyy-MM-dd'));
+        setStartHour(startDate.getHours());
+        setStartMinute(startDate.getMinutes());
+      }
     });
     flatpickr('#datetimepicker2', {
       wrap: true,
@@ -29,12 +44,18 @@ const Calendar = () => {
       defaultHour: now.getHours(),
       defaultMinute: now.getMinutes(),
       minuteIncrement: 1,
-      locale: 'en',
+      locale: Japanese,
       clickOpens: false,
       allowInput: true,
-      monthSelectorType: 'static'
+      monthSelectorType: 'static',
+      onChange: (selectedDates, dateStr, instance) => {
+        const endDate = new Date(dateStr);
+        setEndDate(format(endDate, 'yyyy-MM-dd'));
+        setEndHour(endDate.getHours());
+        setEndMinute(endDate.getMinutes());
+      }
     });
-  },[]);
+  }, []);
   return (
     <div>
       <div className="input-group date mb-3" id="datetimepicker1" data-target-input="nearest">
@@ -56,12 +77,28 @@ const Calendar = () => {
         </div>
       </div>
       <div className="reservation-btn-layout">
-        <button onClick={() => {}} type="submit" className="btn btn-thm">
+        <button onClick={() => {
+          setStartDate("");
+          setEndDate("");
+          setStartHour("");
+          setStartMinute("");
+          setEndHour("");
+          setEndMinute("");
+        }} className="btn btn-thm">
           クリア
         </button>
         <button
-          onClick={() => {}}
-          type="submit"
+          onClick={() => {
+            setFormData((prev) => ({
+              ...prev,
+              startDate,
+              endDate,
+              startHour,
+              startMinute,
+              endHour,
+              endMinute,
+            }))
+          }}
           className="btn btn-thm reservation-btn"
         >
           適用する

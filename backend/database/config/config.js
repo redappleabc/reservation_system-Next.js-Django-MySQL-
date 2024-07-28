@@ -13,6 +13,7 @@ module.exports = {
       bigNumberStrings: true,
     },
     timezone: "+08:00",
+    logging: false,
   },
   test: {
     username: process.env.MYSQL_USERNAME,
@@ -37,5 +38,6 @@ module.exports = {
       bigNumberStrings: true,
     },
     timezone: "+08:00",
+    logging: false,
   },
 };

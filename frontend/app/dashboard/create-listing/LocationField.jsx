@@ -1,16 +1,70 @@
-const LocationField = () => {
+"use client";
+
+import { useState, useEffect } from "react";
+import _ from "lodash";
+
+import { frontendAxiosInstance } from "@/utils/http-common";
+import toast from "react-hot-toast";
+
+const LocationField = ({ service, setService }) => {
+
+  const [formData, setFormData] = useState({
+    place: "",
+    prefecture: "",
+    city: "",
+    address: "",
+    postcode: ""
+  })
+
+  useEffect(() => {
+    setFormData({
+      place: _.get(service.ServiceLocation, 'place', ''),
+      prefecture: _.get(service.ServiceLocation, 'prefecture', ''),
+      city: _.get(service.ServiceLocation, 'city', ''),
+      address: _.get(service.ServiceLocation, 'address', ''),
+      postcode: _.get(service.ServiceLocation, 'postcode', '')
+    })
+  }, [service])
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }))
+  }
+
+  const handleSubmit = async (e) => {
+    if (!Object.values(formData).some(value => value)) {
+      return;
+    }
+    try {
+      let payload = formData;
+      if (service) {
+        payload = {
+          serviceId: service.uuid,
+          ...formData
+        }
+      }
+      const res = await frontendAxiosInstance.post('service/location', payload);
+      setService(res.data.result.service);
+      toast.success(res.data.message);
+    } catch (err) {
+      toast.error(err.response.data.error);
+    }
+  }
   return (
     <>
       <div className="col-lg-12">
         <div className="my_profile_setting_input form-group">
-          <label htmlFor="propertyAddress">場所</label>
-          <input type="text" className="form-control" id="propertyAddress" />
+          <label htmlFor="place">場所</label>
+          <input type="text" className="form-control" id="place" name="place" value={formData.place} onChange={handleInputChange} />
         </div>
       </div>
       <div className="col-lg-6 col-xl-6">
         <div className="my_profile_setting_input form-group">
-          <label htmlFor="propertyPrefecture">都道府県</label>
-          <select className="selectpicker w100 show-tick form-select" id="propertyPrefecture">
+          <label htmlFor="prefecture">都道府県</label>
+          <select className="selectpicker w100 show-tick form-select" id="prefecture" name="prefecture" value={formData.prefecture} onChange={handleInputChange}>
             <option value="北海道">北海道</option>
             <option value="青森県">青森県</option>
             <option value="岩手県">岩手県</option>
@@ -65,11 +119,14 @@ const LocationField = () => {
 
       <div className="col-lg-6 col-xl-6">
         <div className="my_profile_setting_input ui_kit_select_search form-group">
-          <label>市区町村</label>
+          <label htmlFor="city">市区町村</label>
           <select
             className="selectpicker form-select"
             data-live-search="true"
             data-width="100%"
+            name="city"
+            value={formData.city}
+            onChange={handleInputChange}
           >
             <option>千代田区</option>
             <option>中央区</option>
@@ -101,16 +158,16 @@ const LocationField = () => {
 
       <div className="col-lg-8 col-xl-8">
         <div className="my_profile_setting_input form-group">
-          <label htmlFor="neighborHood">住所</label>
-          <input type="text" className="form-control" id="neighborHood" />
+          <label htmlFor="address">住所</label>
+          <input type="text" className="form-control" id="address" name="address" value={formData.address} onChange={handleInputChange} />
         </div>
       </div>
       {/* End .col */}
 
       <div className="col-lg-4 col-xl-4">
         <div className="my_profile_setting_input form-group">
-          <label htmlFor="zipCode">郵便番号</label>
-          <input type="text" className="form-control" id="zipCode" />
+          <label htmlFor="postcode">郵便番号</label>
+          <input type="text" className="form-control" id="postcode" name="postcode" value={formData.postcode} onChange={handleInputChange} />
         </div>
       </div>
 
@@ -130,7 +187,7 @@ const LocationField = () => {
       <div className="col-xl-12">
         <div className="my_profile_setting_input">
           <button className="btn btn1 float-start">Back</button>
-          <button className="btn btn2 float-end">Next</button>
+          <button className="btn btn2 float-end" onClick={handleSubmit}>Next</button>
         </div>
       </div>
     </>

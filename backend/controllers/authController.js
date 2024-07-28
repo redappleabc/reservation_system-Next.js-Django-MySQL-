@@ -37,7 +37,11 @@ exports.signup = async (req, res) => {
       role
     })
 
-    const token = generateToken(newUser);
+    const userObj = newUser.toJSON();
+
+    userObj.avatar = "";
+
+    const token = generateToken(userObj);
 
     // const expireDate = new Date();
     // expireDate.setDate(expireDate.getDate() + 1);
@@ -51,7 +55,7 @@ exports.signup = async (req, res) => {
     res.status(200).json({
       message: 'Signup successfully',
       result: {
-        user: newUser,
+        user: userObj,
         token
       }
     })
@@ -87,7 +91,13 @@ exports.login = async (req, res) => {
       })
     }
 
-    const token = generateToken(user);
+    const profile = await user.getProfile();
+
+    const userObj = user.toJSON();
+
+    userObj.avatar = profile ? profile.avatar || "" : "";
+
+    const token = generateToken(userObj);
 
     res.cookie('token', token, {
       httpOnly: true,
@@ -98,7 +108,7 @@ exports.login = async (req, res) => {
     res.status(200).json({
       message: 'Login successfully',
       result: {
-        user,
+        user: userObj,
         token
       }
     })
@@ -120,7 +130,13 @@ exports.loginWithToken = async (req, res) => {
       }
     })
 
-    const token = generateToken(user);
+    const profile = await user.getProfile();
+
+    const userObj = user.toJSON();
+
+    userObj.avatar = profile ? profile.avatar || "" : "";
+    
+    const token = generateToken(userObj);
 
     res.cookie('token', token, {
       httpOnly: true,
@@ -131,7 +147,7 @@ exports.loginWithToken = async (req, res) => {
     res.status(200).json({
       message: 'Login with token successfully',
       result: {
-        user,
+        user: userObj,
         token
       }
     })

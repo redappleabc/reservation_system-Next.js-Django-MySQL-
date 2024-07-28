@@ -1,11 +1,26 @@
 'use client'
 
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
 import Link from "next/link";
 import Slider from "react-slick";
-import properties from "../data/properties";
 import Image from "next/image";
+import toast from "react-hot-toast";
+import _ from "lodash";
 
-const FeaturedProperties = () => {
+import { frontendAxiosInstance } from "@/utils/http-common";
+import { AllMainCategories, AllSubCategories, paymethodList, ServicePropertyList, AllTags } from "@/utils/configInfo";
+import properties from "../data/properties";
+
+const FeaturedProperties = ({ type, category = "" }) => {
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { isAuthenticate, user } = useSelector(state => state.auth);
+
+  const [services, setServices] = useState([]);
+
   const settings = {
     dots: true,
     arrows: false,
@@ -38,77 +53,194 @@ const FeaturedProperties = () => {
     ],
   };
 
+  const fetchServiceList = async () => {
+    try {
+      let queryObj = {
+        searchType: type
+      }
+
+      if (type === 'category' && category) {
+        queryObj['category'] = category;
+      }
+
+      const entries = Object.entries(queryObj);
+
+      const params = new URLSearchParams(searchParams.toString());
+      for (let [key, value] of entries) {
+        params.set(key, value);
+      }
+
+      const queryStr = params.toString();
+      const res = await frontendAxiosInstance.get(`allService/basic?${queryStr}`);
+
+      const resultServices = res.data.result.services;
+      let sampleServices = resultServices;
+      while (sampleServices.length < 12) {
+        let temp = sampleServices;
+        temp = temp.concat(sampleServices);
+        sampleServices = temp;
+      }
+      setServices(sampleServices);
+
+    } catch (err) {
+      toast.error(err.response?.data.error);
+    }
+  }
+
+  useEffect(() => {
+    fetchServiceList();
+  }, [type, category])
+
+  const handleClickBookMarked = async (service, serviceIndex) => {
+    if (!isAuthenticate) {
+      router.push('/auth/login');
+    }
+
+    const bookmarkedInfo = service.bookmarkedUsers;
+    const index = bookmarkedInfo.findIndex(item => item.uuid === user?.uuid);
+    if (index >= 0) {
+      const res = await frontendAxiosInstance.delete(`user/bookmarked/${service.uuid}`);
+      bookmarkedInfo.splice(index, 1);
+      service.bookmarkedInfo = bookmarkedInfo;
+    } else {
+      const res = await frontendAxiosInstance.post(`user/bookmarked/${service.uuid}`);
+      const resultInfo = res.data.result.service;
+      bookmarkedInfo.push({
+        uuid: resultInfo.user_uuid,
+        ServiceBookmarkedUser: {
+          isView: false
+        }
+      })
+      service.bookmarkedInfo = bookmarkedInfo;
+    }
+
+    const prevServices = [...services];
+    prevServices[serviceIndex] = service;
+    setServices(prevServices);
+  }
   return (
     <>
       <Slider {...settings} arrows={false}>
-        {properties.slice(0, 12).map((item) => (
-          <div className="item" key={item.id}>
-            <div className="feat_property home3">
-              <div className="thumb">
-                <Image
-                  width={343}
-                  height={220}
-                  className="img-whp w-100 h-100 cover"
-                  src={item.img}
-                  alt="fp1.jpg"
-                />
-                <div className="thmb_cntnt top-property">
-                  <ul className="tag mb0">
-                    {item.saleTag.map((val, i) => (
-                      <li className="list-inline-item" key={i}>
-                        <a href="#">{val}</a>
+        {
+          services.slice(0, 12).map((item, index) => (
+            <div className="item" key={index}>
+              <div className="feat_property home3"
+                style={{
+                  boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
+                }}>
+                <div className="thumb">
+                  <img
+                    width={343}
+                    height={220}
+                    className="img-whp w-100 h-100 cover"
+                    src={item.RelatedImages.length > 0 ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/${item.RelatedImages[0]?.path}` : '/assets/images/property/fp1.jpg'}
+                    alt="fp1.jpg"
+                  />
+                  <div className="thmb_cntnt top-property">
+                    <ul className="tag mb0">
+                      <li className="list-inline-item" style={{ width: 'auto' }}>
+                        <span style={{ color: 'white' }}>
+                          {
+                            AllMainCategories.find(category => category.key === _.get(item, 'Category.main', ''))?.name
+                          }
+                        </span>
                       </li>
-                    ))}
-                  </ul>
+                      <br />
+                      <li className="list-inline-item" style={{ width: 'auto' }}>
+                        <span style={{ color: 'white' }}>
+                          {
+                            AllSubCategories.find(category => category.key === _.get(item, 'Category.sub', ''))?.name
+                          }
+                        </span>
+                      </li>
+                    </ul>
 
-                  <ul className="icon mb0">
-                    <li className="list-inline-item">
-                      <a href="#">
-                        <span className="flaticon-transfer-1"></span>
-                      </a>
-                    </li>
-                    <li className="list-inline-item">
-                      <a href="#">
-                        <span className="flaticon-heart"></span>
-                      </a>
-                    </li>
-                  </ul>
-
-                  <Link
-                    href={`/listing-details-v1/${item.id}`}
-                    className="fp_price"
-                  >
-                    {item.price}PT
-                  </Link>
-                </div>
-              </div>
-              <div className="details">
-                <div className="tc_content">
-                  <p className="text-thm">{item.type}</p>
-                  <h4>
-                    <Link href={`/listing-details-v1/${item.id}`}>
-                      {item.title}
-                    </Link>
-                  </h4>
-                  <p>
-                    <span className="flaticon-placeholder"></span>
-                    {item.location}
-                  </p>
-
-                  <ul className="prop_details mb0 gap-2">
-                    {item.itemDetails.map((val, i) => (
-                      <li className="list-inline-item" key={i}>
-                        <a href="#" className="d-flex border border-secondary border-1 rounded px-2 py-1" style={{ fontSize: '12px', color: '#333' }}>
-                          {val.name}
+                    <ul className="icon mb0">
+                      <li className="list-inline-item">
+                        <a type="button">
+                          <span className="flaticon-transfer-1"></span>
                         </a>
                       </li>
-                    ))}
-                  </ul>
+                      <li className="list-inline-item"
+                        style={{
+                          backgroundColor: isAuthenticate && item.bookmarkedUsers.some(value => value.uuid === user?.uuid) && 'var(--color-primary)',
+                          opacity: isAuthenticate && item.bookmarkedUsers.some(value => value.uuid === user?.uuid) && 1,
+                        }}>
+                        <a type="button"
+                          onClick={() => handleClickBookMarked(item, index)}>
+                          <span className="flaticon-heart"></span>
+                        </a>
+                      </li>
+                    </ul>
+
+                    <Link
+                      href={`/listing-details-v1/${item.uuid}`}
+                      className="fp_price"
+                    >
+                      {
+                        item.DetailInfo?.point && (item.DetailInfo.point + 'PT/')
+                      }
+                      <small>
+                        {
+                          paymethodList.find(method => method.key === _.get(item, 'DetailInfo.paymethod', 'fixed'))?.name
+                        }
+                      </small>
+                    </Link>
+                  </div>
+                </div>
+                <div className="details">
+                  <div className="tc_content">
+                    <p className="text-thm">
+                      {
+                        ServicePropertyList.find(property => property.key === _.get(item, 'type', ''))?.name
+                      }
+                    </p>
+                    <h4>
+                      <Link href={`/listing-details-v1/${item.uuid}`}>
+                        <p style={{
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}>
+                          {
+                            _.get(item, 'title', '')
+                          }
+                        </p>
+                      </Link>
+                    </h4>
+                    <p style={{
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}>
+                      <span className="flaticon-placeholder"></span>
+                      {_.get(item, 'ServiceLocation.prefecture', '')}{" "}
+                      {_.get(item, 'ServiceLocation.city', '')}{" "}
+                      {_.get(item, 'ServiceLocation.address', '')}
+                    </p>
+
+                    <ul className="prop_details mb0 gap-2 scrollbar-x-container-hidden" style={{
+                      whiteSpace: 'nowrap',
+                      overflowX: 'scroll',
+                    }}>
+                      {
+                        item.tags && item.tags.map((tag, index) => (
+                          <li className="list-inline-item" key={index}>
+                            <a href="#" className="d-flex border border-secondary border-1 rounded px-2 py-1" style={{ fontSize: '12px', color: '#333' }}>
+                              {
+                                AllTags.find(value => value.key === tag)?.name
+                              }
+                            </a>
+                          </li>
+                        ))
+                      }
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        }
       </Slider>
     </>
   );

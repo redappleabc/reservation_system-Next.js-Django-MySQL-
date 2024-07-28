@@ -6,36 +6,30 @@ import InputRange from "react-input-range";
 import { useDispatch } from "react-redux";
 import { addPrice } from "../../features/properties/propertiesSlice";
 
-const RangeSlider = () => {
-  const [price, setPrice] = useState({ value: { min: 100, max: 20000 } });
-  const dispath = useDispatch();
+const RangeSlider = ({ formData, setFormData }) => {
 
   const handleOnChange = (value) => {
-    setPrice({ value });
+    setFormData((prev) => ({
+      ...prev,
+      min_point: value.min,
+      max_point: value.max
+    }))
   };
 
   // price add to state
-  useEffect(() => {
-    dispath(
-      addPrice({
-        min: price.value.min,
-        max: price.value.max,
-      })
-    );
-  }, [dispath, price]);
 
   return (
     <div className="nft__filter-price tp-range-slider tp-range-slider-dark mb-20">
       <div className="nft__filter-price-inner d-flex align-items-center justify-content-between">
         <div className="nft__filter-price-box">
           <div className="d-flex align-items-center">
-            <span>{price.value.min}</span>
+            <span>{formData.min_point}</span>
             <span>PT </span>
           </div>
         </div>
         <div className="nft__filter-price-box">
           <div className="d-flex align-items-center">
-            <span>{price.value.max}</span>
+            <span>{formData.max_point}</span>
             <span>PT </span>
           </div>
         </div>
@@ -45,7 +39,10 @@ const RangeSlider = () => {
         formatLabel={(value) => ``}
         maxValue={20000}
         minValue={100}
-        value={price.value}
+        value={{
+          min: formData.min_point,
+          max: formData.max_point,
+        }}
         onChange={(value) => handleOnChange(value)}
       />
 

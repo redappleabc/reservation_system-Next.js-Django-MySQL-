@@ -1,11 +1,13 @@
 'use client';
 
+import { useState, useEffect } from "react";
+
 import ServiceCalendar from "./ServiceCalendar";
 import ServiceCalendarShort from "./ServiceCalendarShort";
 import React from "react";
-import { useState } from "react";
 
-const DateTimeReservation = () => {
+const DateTimeReservation = ({ service, setService }) => {
+
   return (
     <div className="home_adv_srch_opt dateTimeReservation">
       <ul className="nav nav-pills" id="pills-tab" role="tablist">
@@ -45,7 +47,7 @@ const DateTimeReservation = () => {
           aria-labelledby="pills-home-tab"
         >
           <div>
-            <ServiceCalendar />
+            <ServiceCalendar service={service} setService={setService} />
           </div>
         </div>
         <div
@@ -54,7 +56,9 @@ const DateTimeReservation = () => {
           role="tabpanel"
           aria-labelledby="pills-profile-tab"
         >
-          <div><ServiceCalendarShort /></div>
+          <div>
+            <ServiceCalendarShort service={service} setService={setService} />
+          </div>
         </div>
       </div>
     </div>

@@ -17,10 +17,16 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Profile.init({
+    avatar: DataTypes.STRING,
     lastname: DataTypes.STRING,
     firstname: DataTypes.STRING,
     occupationType: DataTypes.STRING,
-    birthday: DataTypes.DATE,
+    birthday: {
+      type: DataTypes.DATE,
+      set(value) {
+        this.setDataValue('birthday', new Date(value));
+      }
+    },
     gender: DataTypes.STRING,
     phone_number: DataTypes.STRING,
     address: DataTypes.STRING,
@@ -30,7 +36,6 @@ module.exports = (sequelize, DataTypes) => {
     fullname: {
       type: DataTypes.VIRTUAL,
       get() {
-        
         return this.lastname + " " + this.firstname;
       }
     }

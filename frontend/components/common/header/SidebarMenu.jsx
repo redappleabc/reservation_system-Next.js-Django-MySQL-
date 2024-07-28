@@ -3,31 +3,40 @@
 import Link from "next/link";
 import useSWR from "swr";
 import { AuthActions } from "../../../app/auth/utils";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import Image from "next/image";
+import _ from "lodash";
+
 import { fetcher } from "../../../app/fetcher";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faYenSign } from "@fortawesome/free-solid-svg-icons";
-import { faCartPlus } from "@fortawesome/free-solid-svg-icons";
-import { faMoneyCheck } from "@fortawesome/free-solid-svg-icons";
+import { faYenSign, faCartPlus, faMoneyCheck, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 
 import {
   isParentPageActive,
   isSinglePageActive,
 } from "../../../utils/daynamicNavigation";
-import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { logout } from "@/store/slices/authSlice";
+
+import { DashboardMenu, DashboardMenuCategory } from "@/utils/menuInfo";
+import Dashboard from "@/app/dashboard/page";
 
 const SidebarMenu = () => {
-  const pathname = usePathname();
 
+  const dispatch = useDispatch();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const { user } = useSelector(state => state.auth);
+  
   const myProperties = [
     { id: 1, name: "General Elements", route: "/dashboard/properties" },
     { id: 2, name: "Advanced Elements", route: "/dashboard/properties" },
     { id: 3, name: "Editors", route: "/dashboard/properties" },
   ];
   const reviews = [
-    { id: 1, name: "My Reviews", route: "/dashboard/review" },
-    { id: 2, name: "Visitor Reviews", route: "/dashboard/review" },
+    { id: 1, name: "My Reviews", route: "/dashboard/review#mine" },
+    { id: 2, name: "Visitor Reviews", route: "/dashboard/review#visitor" },
   ];
   const manageAccount = [
     {
@@ -43,24 +52,19 @@ const SidebarMenu = () => {
       icon: "flaticon-user",
     },
   ];
-  const router = useRouter();
 
-  const { data: user } = useSWR("/auth/users/me", fetcher);
-
-  const { logout, removeTokens } = AuthActions();
+  // const { data: user } = useSWR("/auth/users/me", fetcher);
 
   const handleLogout = () => {
-    logout()
-      .res(() => {
-        removeTokens();
-
-        router.push("/");
-      })
-      .catch(() => {
-        removeTokens();
-        router.push("/");
-      });
+    const confirmMessage = "このサイトを本当に終了してもよろしいですか?";
+    if (window.confirm(confirmMessage)) {
+      dispatch(logout());
+      router.push("/");
+    } else {
+      return;
+    }
   };
+
   return (
     <>
       <div className="dashboard_sidebar_menu">
@@ -83,27 +87,87 @@ const SidebarMenu = () => {
               </Link>
             </li>
 
-            <li className="title">
+            <ul className="px-3 py-4 d-flex flex-column">
+              {
+                user && DashboardMenuCategory.map((category, categoryIndex) => DashboardMenu.filter(item => item.category === category.key).filter(item => item.role.includes(user.role)).length > 0 && (
+                  <li key={categoryIndex} className={`${categoryIndex ? 'pt-4' : 'pt-0' }`}>
+                    <span className="text-white" style={{ fontSize: '18px' }}>{category.value}</span>
+                    <ul>
+                      {
+                        DashboardMenu.filter(item => item.category === category.key).filter(item => item.role.includes(user.role)).map((mainItem, index) => (
+                          <li key={index}>
+                            <ul>
+                              {
+                                mainItem.children !== undefined && Array.isArray(mainItem.children) ? (
+                                  <li>
+                                    <a type="btn" data-bs-toggle="collapse" href={`#${mainItem.key}`} className="" >
+                                      <FontAwesomeIcon icon={mainItem.icon} />
+                                      <span>{mainItem.value}</span>
+                                      <i className="fa fa-angle-down pull-right"></i>
+                                    </a>
+                                    <ul className="treeview-menu collapse" id={mainItem.key}>
+                                      {
+                                        mainItem.children.map((subItem, subIndex) => (
+                                          <li key={subIndex} className={`treeview ${isSinglePageActive(`/dashboard/${subItem.path}`, pathname) ? 'active' : ''}`}>
+                                            <Link href={`/dashboard/${subItem.path}`} >
+                                              {
+                                                subItem.icon ? (
+                                                  <FontAwesomeIcon icon={subItem.icon} />
+                                                ) : (
+                                                  <i className="fa fa-circle"></i>
+                                                )
+                                              }
+                                              <span>{subItem.value}</span>
+                                            </Link>
+                                          </li>
+                                        ))
+                                      }
+                                    </ul>
+                                  </li>
+                                ) : (
+                                  <li className={`treeview ${isSinglePageActive((mainItem.path ? `/dashboard/${mainItem.path}` : '/dashboard'), pathname) ? 'active' : ''}`}>
+                                    <Link href={`/dashboard/${mainItem.path}`}>
+                                      <FontAwesomeIcon icon={mainItem.icon} />
+                                      <span>{mainItem.value}</span>
+                                    </Link>
+                                  </li>
+                                )
+                              }
+                            </ul>
+                          </li>
+                        ))
+                      }
+                    </ul>
+                  </li>
+                ))
+              }
+            </ul>
+
+            <ul>
+              <div className="logout" onClick={handleLogout}>
+                <i className="flaticon-logout"></i>
+                <span className="">ログアウト</span>
+              </div>
+            </ul>
+
+            {/* <li className="title">
               <span>Main</span>
               <ul>
                 <li
-                  className={`treeview ${
-                    isSinglePageActive("/dashboard", pathname)
-                      ? "active"
-                      : ""
-                  }`}
+                  className={`treeview ${isSinglePageActive("/dashboard", pathname)
+                    ? "active"
+                    : ""
+                    }`}
                 >
                   <Link href="/dashboard">
-                    <i className="flaticon-layers"></i>
                     <span> Dashboard</span>
                   </Link>
                 </li>
                 <li
-                  className={`treeview ${
-                    isSinglePageActive("/dashboard/create-listing", pathname)
-                      ? "active"
-                      : ""
-                  }`}
+                  className={`treeview ${isSinglePageActive("/dashboard/create-listing", pathname)
+                    ? "active"
+                    : ""
+                    }`}
                 >
                   <Link href="/dashboard/create-listing">
                     <i className="flaticon-plus"></i>
@@ -111,9 +175,8 @@ const SidebarMenu = () => {
                   </Link>
                 </li>
                 <li
-                  className={`treeview ${
-                    isSinglePageActive("/dashboard/message", pathname) ? "active" : ""
-                  }`}
+                  className={`treeview ${isSinglePageActive("/dashboard/message", pathname) ? "active" : ""
+                    }`}
                 >
                   <Link href="/dashboard/message">
                     <i className="flaticon-envelope"></i>
@@ -121,14 +184,13 @@ const SidebarMenu = () => {
                   </Link>
                 </li>
               </ul>
-            </li>
-            <li className="title">
+            </li> */}
+            {/* <li className="title">
               <span>Manage Service Listings</span>
               <ul>
                 <li
-                  className={`treeview ${
-                    isParentPageActive(myProperties, pathname) ? "active" : ""
-                  }`}
+                  className={`treeview ${isParentPageActive(myProperties, pathname) ? "active" : ""
+                    }`}
                 >
                   <a data-bs-toggle="collapse" href="#my-property">
                     <i className="flaticon-home"></i> <span>My Services</span>
@@ -144,12 +206,10 @@ const SidebarMenu = () => {
                     ))}
                   </ul>
                 </li>
-                {/* end properties */}
 
                 <li
-                  className={`treeview ${
-                    isParentPageActive(reviews, pathname) ? "active" : ""
-                  }`}
+                  className={`treeview ${isParentPageActive(reviews, pathname) ? "active" : ""
+                    }`}
                 >
                   <a data-bs-toggle="collapse" href="#review">
                     <i className="flaticon-chat"></i>
@@ -167,44 +227,41 @@ const SidebarMenu = () => {
                   </ul>
                 </li>
                 <li
-                  className={`treeview ${
-                    isSinglePageActive("/dashboard/price-request", pathname)
-                      ? "active"
-                      : ""
-                  }`}
+                  className={`treeview ${isSinglePageActive("/dashboard/price-request", pathname)
+                    ? "active"
+                    : ""
+                    }`}
                 >
                   <Link href="/dashboard/price-request">
-                    <FontAwesomeIcon icon={faYenSign}/>
+                    <FontAwesomeIcon icon={faYenSign} />
                     <span> 振込申請</span>
                   </Link>
                 </li>
                 <li
-                  className={`treeview ${
-                    isSinglePageActive("/dashboard/subscription", pathname)
-                      ? "active"
-                      : ""
-                  }`}
+                  className={`treeview ${isSinglePageActive("/dashboard/subscription", pathname)
+                    ? "active"
+                    : ""
+                    }`}
                 >
                   <Link href="/dashboard/subscription">
-                    <FontAwesomeIcon icon={faCartPlus}/>
+                    <FontAwesomeIcon icon={faCartPlus} />
                     <span> サブスクリプション</span>
                   </Link>
                 </li>
                 <li
-                  className={`treeview ${
-                    isSinglePageActive("/dashboard/point-back", pathname)
-                      ? "active"
-                      : ""
-                  }`}
+                  className={`treeview ${isSinglePageActive("/dashboard/point-back", pathname)
+                    ? "active"
+                    : ""
+                    }`}
                 >
                   <Link href="/dashboard/point-back">
-                    <FontAwesomeIcon icon={faMoneyCheck}/>
+                    <FontAwesomeIcon icon={faMoneyCheck} />
                     <span> ポイントパック</span>
                   </Link>
                 </li>
               </ul>
-            </li>
-            <li className="title">
+            </li> */}
+            {/* <li className="title">
               <span>アカウント管理</span>
               <ul>
                 {manageAccount.map((item) => (
@@ -226,7 +283,7 @@ const SidebarMenu = () => {
                   <span className="">ログアウト</span>
                 </div>
               </ul>
-            </li>
+            </li> */}
           </ul>
         </div>
       </div>

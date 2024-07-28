@@ -1,17 +1,12 @@
 'use client'
 
-import { useDispatch, useSelector } from "react-redux";
-import { toggleGridAndList } from "../../../features/filter/filterSlice";
-
-const GridListButton = () => {
-  const { isGridOrList } = useSelector((state) => state.filter);
-  const dispatch = useDispatch();
+const GridListButton = ({ isGridOrList, setIsGridOrList }) => {
 
   return (
     <ul className="mb-3">
       <li
         className={`list-inline-item ${!isGridOrList ? "active" : ""}`}
-        onClick={() => dispatch(toggleGridAndList(false))}
+        onClick={() => setIsGridOrList(false)}
       >
         <a>
           <span className="fa fa-th-large"></span>
@@ -21,7 +16,7 @@ const GridListButton = () => {
 
       <li
         className={`list-inline-item ${isGridOrList ? "active" : ""}`}
-        onClick={() => dispatch(toggleGridAndList(true))}
+        onClick={() => setIsGridOrList(true)}
       >
         <a>
           <span className="fa fa-th-list"></span>

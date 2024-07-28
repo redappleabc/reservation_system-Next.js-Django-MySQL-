@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import HeaderMenuContent from "./HeaderMenuContent";
 import Image from "next/image";
 
-const Header = ({ isAuthenticated }) => {
+const Header = () => {
   const [navbar, setNavbar] = useState(false);
 
   const changeBackground = () => {

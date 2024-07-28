@@ -1,46 +1,50 @@
 'use client'
 
-import { useEffect } from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addFeatured,
   addStatusType,
 } from "../../../features/filter/filterSlice";
 
-const FilterTopBar = () => {
-  const { length } = useSelector((state) => state.properties);
-  const { statusType, featured } = useSelector((state) => state.filter);
-  const [getStatus, setStatus] = useState(statusType);
-  const [getFeatured, setFeatured] = useState(featured);
+import { ServiceSortTypeList } from "@/utils/configInfo";
 
-  const dispatch = useDispatch();
+const FilterTopBar = ({ allServicesCount }) => {
 
-  // add status
-  useEffect(() => {
-    dispatch(addStatusType(getStatus));
-  }, [dispatch, getStatus]);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  // add featured
-  useEffect(() => {
-    dispatch(addFeatured(getFeatured));
-  }, [dispatch, getFeatured]);
+  const [formData, setFormData] = useState({
+    sortType: searchParams.get('sortType') || 'recent',
+  })
 
-  // clear filter
-  useEffect(() => {
-    statusType === "" && setStatus("");
-    featured === "" && setFeatured("");
-  }, [statusType, setStatus, featured, setFeatured]);
+  const makeQuery = (key, value) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set(key, value);
+    const queryStr = params.toString();
+    return queryStr;
+  }
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value
+    }))
+    const queryStr = makeQuery(name, value);
+    router.push(`/listings?${queryStr}`);
+  }
 
   return (
     <>
       <div className="col-sm-12 col-md-4 col-lg-4 col-xl-5">
         <div className="left_area tac-xsd">
           <p>
-            <span className={length === 0 ? "text-danger" : undefined}>
-              {length}{" "}
+            <span className={allServicesCount === 0 ? "text-danger" : undefined}>
+              {allServicesCount}{" "}
             </span>
-            {length !== 0 ? (
+            {allServicesCount !== 0 ? (
               "Search results"
             ) : (
               <span className="text-danger">Not found results</span>
@@ -53,7 +57,7 @@ const FilterTopBar = () => {
       <div className="col-sm-12 col-md-8 col-lg-8 col-xl-7">
         <div className="right_area text-end tac-xsd">
           <ul>
-            <li className="list-inline-item">
+            {/* <li className="list-inline-item">
               <span className="stts">Status:</span>
               <select
                 className="selectpicker show-tick"
@@ -64,17 +68,20 @@ const FilterTopBar = () => {
                 <option value="old">Old</option>
                 <option value="recent">Recent</option>
               </select>
-            </li>
+            </li> */}
             <li className="list-inline-item">
               <span className="shrtby">Sort by:</span>
               <select
                 className="selectpicker show-tick"
-                onChange={(e) => setFeatured(e.target.value)}
-                value={getFeatured}
+                name="sortType"
+                value={formData.sortType}
+                onChange={handleInputChange}
               >
-                <option value="">Featured All</option>
-                <option value="sale">Sale</option>
-                <option value="rent">Rent</option>
+                {
+                  ServiceSortTypeList.map((item, index) => (
+                    <option key={index} value={item.key}>{item.value}</option>
+                  ))
+                }
               </select>
             </li>
           </ul>
