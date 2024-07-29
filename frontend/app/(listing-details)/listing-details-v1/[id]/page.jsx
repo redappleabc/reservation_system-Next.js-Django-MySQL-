@@ -13,6 +13,7 @@ import properties from "@/data/properties";
 import DetailsContent from "@/components/listing-details-v1/DetailsContent";
 import Sidebar from "@/components/listing-details-v1/Sidebar";
 import ListingOne from "@/components/listing-single/ListingOne";
+import Loading from "@/app/loading";
 
 import { frontendAxiosInstance } from "@/utils/http-common";
 
@@ -22,16 +23,29 @@ const ListingDynamicDetailsV1 = ({ params }) => {
 
   const [service, setService] = useState({});
   const [viewersCount, setViewersCount] = useState(0);
+  const [initial, setInitial] = useState(true);
 
   const fetchServiceDetailInfo = async (serviceId) => {
     try {
       const res = await frontendAxiosInstance.get(`allService/detail/${serviceId}`);
       const serviceInfo = res.data.result.service;
+      console.log(res.data.result);
       setService(serviceInfo);
       setViewersCount(res.data.result.viewersCount);
     } catch (err) {
       console.error(err);
     }
+  }
+
+  useEffect(() => {
+    fetchServiceDetailInfo(id);
+    setInitial(false);
+  }, [id]);
+
+  if (initial) {
+    return (
+      <Loading />
+    )
   }
 
   return (
@@ -46,8 +60,7 @@ const ListingDynamicDetailsV1 = ({ params }) => {
       <PopupSignInUp />
 
       {/* <!-- Listing Single Property --> */}
-      <ListingOne property={property} />
-
+      <ListingOne property={service} />
 
       {/* <!-- Agent Single Grid View --> */}
       <section className="our-agent-single bgc-f7 pb30-991">
