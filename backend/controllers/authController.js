@@ -48,8 +48,7 @@ exports.signup = async (req, res) => {
 
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
+      secure: false,
     });
 
     res.status(200).json({
@@ -101,8 +100,7 @@ exports.login = async (req, res) => {
 
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
+      secure: false,
     });
 
     res.status(200).json({
@@ -135,13 +133,12 @@ exports.loginWithToken = async (req, res) => {
     const userObj = user.toJSON();
 
     userObj.avatar = profile ? profile.avatar || "" : "";
-    
+
     const token = generateToken(userObj);
 
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
+      secure: false,
     });
 
     res.status(200).json({

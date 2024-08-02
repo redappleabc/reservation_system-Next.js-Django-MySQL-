@@ -24,7 +24,7 @@ export async function GET(request) {
 
       response.cookies.set('token', res.data.result.token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: false,
       });
 
       return response;

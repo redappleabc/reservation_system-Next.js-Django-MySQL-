@@ -76,10 +76,12 @@ const FeaturedProperties = ({ type, category = "" }) => {
       const resultServices = res.data.result.services;
       console.log(resultServices);
       let sampleServices = resultServices;
-      while (sampleServices.length < 12) {
-        let temp = sampleServices;
-        temp = temp.concat(sampleServices);
-        sampleServices = temp;
+      if (sampleServices.length > 0) {
+        while (sampleServices.length < 12) {
+          let temp = sampleServices;
+          temp = temp.concat(sampleServices);
+          sampleServices = temp;
+        }
       }
       setServices(sampleServices);
 
@@ -123,7 +125,7 @@ const FeaturedProperties = ({ type, category = "" }) => {
     <>
       <Slider {...settings} arrows={false}>
         {
-          services.length && services.slice(0, 12).map((item, index) => (
+          services.length > 0 && services.slice(0, 12).map((item, index) => (
             <div className="item" key={index}>
               <div className="feat_property home3"
                 style={{
