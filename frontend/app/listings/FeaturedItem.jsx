@@ -17,12 +17,12 @@ const FeaturedItem = ({ isGridOrList, services, setServices }) => {
       router.push('/auth/login');
     }
 
-    const bookmarkedInfo = service.bookmarkedUsers;
+    const bookmarkedInfo = service.BookmarkedUsers;
     const index = bookmarkedInfo.findIndex(item => item.uuid === user.uuid);
     if (index >= 0) {
       const res = await frontendAxiosInstance.delete(`user/bookmarked/${service.uuid}`);
       bookmarkedInfo.splice(index, 1);
-      service.bookmarkedInfo = bookmarkedInfo;
+      service.BookmarkedUsers = bookmarkedInfo;
     } else {
       const res = await frontendAxiosInstance.post(`user/bookmarked/${service.uuid}`);
       const resultInfo = res.data.result.service;
@@ -32,7 +32,7 @@ const FeaturedItem = ({ isGridOrList, services, setServices }) => {
           isView: false
         }
       })
-      service.bookmarkedInfo = bookmarkedInfo;
+      service.BookmarkedUsers = bookmarkedInfo;
     }
 
     const prevServices = [...services];
@@ -88,8 +88,8 @@ const FeaturedItem = ({ isGridOrList, services, setServices }) => {
                     </li>
                     <li className="list-inline-item"
                       style={{
-                        backgroundColor: isAuthenticate && item.bookmarkedUsers.some(value => value.uuid === user.uuid) && 'var(--color-primary)',
-                        opacity: isAuthenticate && item.bookmarkedUsers.some(value => value.uuid === user.uuid) && 1,
+                        backgroundColor: isAuthenticate && item.BookmarkedUsers.some(value => value.uuid === user.uuid) && 'var(--color-primary)',
+                        opacity: isAuthenticate && item.BookmarkedUsers.some(value => value.uuid === user.uuid) && 1,
                       }}>
                       <a type="button"
                         onClick={() => handleClickBookMarked(item, index)}>
