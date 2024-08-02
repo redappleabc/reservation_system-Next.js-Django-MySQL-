@@ -25,8 +25,6 @@ const localizer = dateFnsLocalizer({
     locales,
 })
 
-console.log(localizer)
-
 export default function CalendarBox() {
     const [eventsData, setEventData] = useState([]);
     const [selected, setSelected] = useState();

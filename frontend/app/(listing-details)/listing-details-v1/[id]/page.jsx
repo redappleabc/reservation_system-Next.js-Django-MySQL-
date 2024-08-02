@@ -28,7 +28,6 @@ const ListingDynamicDetailsV1 = ({ params }) => {
     try {
       const res = await frontendAxiosInstance.get(`allService/detail/${serviceId}`);
       const serviceInfo = res.data.result.service;
-      console.log(res.data.result);
       setService(serviceInfo);
       setViewersCount(res.data.result.viewersCount);
     } catch (err) {
