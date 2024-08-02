@@ -7,7 +7,7 @@ import _ from "lodash";
 import CheckBoxFilter from "../../../components/common/CheckBoxFilter";
 import { frontendAxiosInstance } from "@/utils/http-common";
 
-import { AllMainCategories, AllSubCategories } from "@/utils/configInfo";
+import { AllMainCategories, AllSubCategories, AllTags } from "@/utils/configInfo";
 
 const DetailedInfo = ({ service, setService }) => {
   const [formData, setFormData] = useState({
@@ -15,7 +15,7 @@ const DetailedInfo = ({ service, setService }) => {
     subCategory: ""
   })
 
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState(_.get(service, 'tags', []));
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {

@@ -1,18 +1,16 @@
-const PropertyItem = () => {
+import { AllTags } from "@/utils/configInfo";
+import _ from "lodash";
+
+const PropertyItem = ({ service }) => {
   return (
     <ul className="mb0">
-      <li className="list-inline-item">
-        <a href="#">Apartment</a>
-      </li>
-      <li className="list-inline-item">
-        <a href="#">Beds: 4</a>
-      </li>
-      <li className="list-inline-item">
-        <a href="#">Baths: 2</a>
-      </li>
-      <li className="list-inline-item">
-        <a href="#">Sq Ft: 5280</a>
-      </li>
+      {
+        AllTags.filter(tag => _.get(service, 'tags', [])?.some(item => item === tag.key)).map((tag, index) => (
+          <li key={index} className="list-inline-item" style={{ marginTop: '10px', border: '1px solid rgba(0,0,0,0.8)', backgroundColor: 'white' }}>
+            <a href="#">{tag.name}</a>
+          </li>
+        ))
+      }
     </ul>
   );
 };

@@ -7,6 +7,8 @@ import _ from "lodash";
 import { frontendAxiosInstance } from "@/utils/http-common";
 import service from "@/data/service";
 
+const MaxInterger = 4294967295;
+
 const CreateList = ({ newService, setNewService }) => {
 
   const [formData, setFormData] = useState({
@@ -14,6 +16,7 @@ const CreateList = ({ newService, setNewService }) => {
     overview: '',
     type: 'school',
     min_level: 0,
+    max_candidates: 'inf',
   })
   const [errorTitle, setErrorTitle] = useState();
   const [isFocusTitleField, setIsFocusTitleField] = useState(false);
@@ -43,6 +46,7 @@ const CreateList = ({ newService, setNewService }) => {
       overview: _.get(newService, 'overview', ''),
       type: _.get(newService, 'type', 'school'),
       min_level: Number(_.get(newService, 'min_level', '0')),
+      max_candidates: Number(_.get(newService, 'max_candidates', '0')) === MaxInterger ? 'inf' : Number(_.get(newService, 'max_candidates', '0'))
     })
   }, [newService])
 
@@ -115,7 +119,7 @@ const CreateList = ({ newService, setNewService }) => {
             ></textarea>
           </div>
         </div>
-        <div className="col-lg-6 col-xl-6">
+        <div className="col-lg-4 col-xl-4">
           <div className="my_profile_setting_input ui_kit_select_search form-group">
             <label htmlFor="type" className="d-flex flex-row gap-2">
               <span>サービスタイプ</span>
@@ -136,22 +140,17 @@ const CreateList = ({ newService, setNewService }) => {
             </select>
           </div>
         </div>
-        {/* <div className="col-lg-4 col-xl-4">
+        <div className="col-lg-4 col-xl-4">
           <div className="my_profile_setting_input ui_kit_select_search form-group">
-            <label>ステータス</label>
-            <select
-              className="selectpicker form-select"
-              data-live-search="true"
-              data-width="100%"
-            >
-              <option data-tokens="Status1">下書き</option>
-              <option data-tokens="Status2">審査中</option>
-              <option data-tokens="Status3">公開済み</option>
-              <option data-tokens="Status3">終了</option>
-            </select>
+            <label htmlFor="max_candidates" className="d-flex flex-row gap-2">
+              <span>最大予約人数</span>
+              <span className="badge text-bg-success text-wrap text-center align-content-center" style={{ fontSize: '10px' }}>任意</span>
+            </label>
+            <input type="number" className="form-control" id="max_candidates" name="max_candidates" min={1} value={formData.max_candidates} placeholder="サービスに最大で予約できる人数を入力してください。"
+              onChange={handleInputChange} />
           </div>
-        </div> */}
-        <div className="col-lg-6 col-xl-6">
+        </div>
+        <div className="col-lg-4 col-xl-4">
           <div className="my_profile_setting_input ui_kit_select_search form-group">
             <label htmlFor="min_level" className="d-flex flex-row gap-2">
               <span>ユーザーレベル</span>

@@ -13,17 +13,17 @@ import PropertyVideo from "../common/listing-details/PropertyVideo";
 import WalkScore from "../common/listing-details/WalkScore";
 import WhatsNearby from "../common/listing-details/WhatsNearby";
 
-const DetailsContent = () => {
+const DetailsContent = ({ service }) => {
   return (
     <>
       <div className="listing_single_description">
         <div className="lsd_list">
-          <PropertyItem />
+          <PropertyItem service={service} />
         </div>
         {/* End .lsd_list */}
 
         <h4 className="mb30">Description</h4>
-        <PropertyDescriptions />
+        <PropertyDescriptions service={service} />
       </div>
       {/* End .listing_single_description */}
 
@@ -92,17 +92,6 @@ const DetailsContent = () => {
         <PropertyVideo />
       </div>
       {/* End property-video  */}
-
-      <div className="walkscore_area mt30">
-        <WalkScore />
-      </div>
-      {/* End walkscore_area */}
-
-      <div className="whats_nearby mt30">
-        <h4 className="mb10">What&apos;s Nearby</h4>
-        <WhatsNearby />
-      </div>
-      {/* End what's nearby area */}
 
       <div className="product_single_content">
         <div className="mbp_pagination_comments mt30">

@@ -79,7 +79,10 @@ module.exports = (sequelize, DataTypes) => {
     type: DataTypes.STRING,
     status: DataTypes.STRING,
     min_level: DataTypes.TINYINT.UNSIGNED,
+    max_candidates: DataTypes.INTEGER.UNSIGNED,
     tags: JsonField(sequelize, 'Service', 'tags'),
+    viewerCount: DataTypes.INTEGER.UNSIGNED,
+    reservationCount: DataTypes.INTEGER.UNSIGNED,
     user_uuid: DataTypes.UUID
   }, {
     sequelize,

@@ -74,6 +74,7 @@ const FeaturedProperties = ({ type, category = "" }) => {
       const res = await frontendAxiosInstance.get(`allService/basic?${queryStr}`);
 
       const resultServices = res.data.result.services;
+      console.log(resultServices);
       let sampleServices = resultServices;
       while (sampleServices.length < 12) {
         let temp = sampleServices;
@@ -96,7 +97,7 @@ const FeaturedProperties = ({ type, category = "" }) => {
       router.push('/auth/login');
     }
 
-    const bookmarkedInfo = service.bookmarkedUsers;
+    const bookmarkedInfo = service.BookmarkedUsers;
     const index = bookmarkedInfo.findIndex(item => item.uuid === user?.uuid);
     if (index >= 0) {
       const res = await frontendAxiosInstance.delete(`user/bookmarked/${service.uuid}`);
@@ -122,7 +123,7 @@ const FeaturedProperties = ({ type, category = "" }) => {
     <>
       <Slider {...settings} arrows={false}>
         {
-          services.slice(0, 12).map((item, index) => (
+          services.length && services.slice(0, 12).map((item, index) => (
             <div className="item" key={index}>
               <div className="feat_property home3"
                 style={{
@@ -163,8 +164,8 @@ const FeaturedProperties = ({ type, category = "" }) => {
                       </li>
                       <li className="list-inline-item"
                         style={{
-                          backgroundColor: isAuthenticate && item.bookmarkedUsers.some(value => value.uuid === user?.uuid) && 'var(--color-primary)',
-                          opacity: isAuthenticate && item.bookmarkedUsers.some(value => value.uuid === user?.uuid) && 1,
+                          backgroundColor: isAuthenticate && item.BookmarkedUsers.some(value => value.uuid === user?.uuid) && 'var(--color-primary)',
+                          opacity: isAuthenticate && item.BookmarkedUsers.some(value => value.uuid === user?.uuid) && 1,
                         }}>
                         <a type="button"
                           onClick={() => handleClickBookMarked(item, index)}>

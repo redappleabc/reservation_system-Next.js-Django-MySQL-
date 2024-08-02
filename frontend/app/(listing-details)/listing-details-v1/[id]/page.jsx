@@ -23,7 +23,6 @@ const ListingDynamicDetailsV1 = ({ params }) => {
 
   const [service, setService] = useState({});
   const [viewersCount, setViewersCount] = useState(0);
-  const [initial, setInitial] = useState(true);
 
   const fetchServiceDetailInfo = async (serviceId) => {
     try {
@@ -39,14 +38,7 @@ const ListingDynamicDetailsV1 = ({ params }) => {
 
   useEffect(() => {
     fetchServiceDetailInfo(id);
-    setInitial(false);
   }, [id]);
-
-  if (initial) {
-    return (
-      <Loading />
-    )
-  }
 
   return (
     <>
@@ -67,7 +59,7 @@ const ListingDynamicDetailsV1 = ({ params }) => {
         <div className="container">
           <div className="row">
             <div className="col-md-12 col-lg-8">
-              <DetailsContent />
+              <DetailsContent service={service} />
             </div>
             {/* End details content .col-lg-8 */}
 

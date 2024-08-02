@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import toast from "react-hot-toast";
+import _ from "lodash";
 
 import selectedFiles from "../../../utils/selectedFiles";
 import { frontendAxiosInstance } from "@/utils/http-common";
@@ -11,7 +12,14 @@ const PropertyMediaUploader = ({ service, setService }) => {
 
   const [propertySelectedImgs, setPropertySelectedImgs] = useState([]);
   const [propertySelectedFiles, setPropertySelectedFiles] = useState([]);
-  
+  const [alreadyStoredImages, setAlreadyStoredImages] = useState([]);
+  const [alreadyStoredFiles, setAlreadyStoredFiles] = useState([]);
+
+  useEffect(() => {
+    setAlreadyStoredImages(_.get(service, 'RelatedImages', []));
+    setAlreadyStoredFiles(_.get(service, 'RelatedFiles', []));
+  }, [service])
+
   const multipleImage = (e) => {
     const isExist = propertySelectedImgs?.some((file1) =>
       selectedFiles(e)?.some((file2) => file1.name === file2.name)
@@ -29,6 +37,18 @@ const PropertyMediaUploader = ({ service, setService }) => {
     const deleted = propertySelectedImgs?.filter((file) => file.name !== name);
     setPropertySelectedImgs(deleted);
   };
+
+  const deleteAlreadyStoredImage = (index) => {
+    const prevImages = [...alreadyStoredImages];
+    prevImages.splice(index, 1);
+    setAlreadyStoredImages(prevImages);
+  }
+
+  const deleteAlreadyStoredFiles = (index) => {
+    const prevFiles = [...alreadyStoredFiles];
+    prevFiles.splice(index, 1);
+    setAlreadyStoredFiles(prevFiles);
+  }
 
   const multipleFiles = (e) => {
     const isExist = propertySelectedFiles.some((file1) =>
@@ -61,12 +81,21 @@ const PropertyMediaUploader = ({ service, setService }) => {
       for (const file of propertySelectedFiles) {
         formData.append('files', file, encodeURIComponent(file.name));
       }
+      for (const image of alreadyStoredImages) {
+        formData.append('alreadyImages', JSON.stringify(image));
+      }
+      for (const file of alreadyStoredFiles) {
+        formData.append('alreadyFiles', JSON.stringify(file));
+      }
+
       const res = await frontendAxiosInstance.post('service/related-images-files', formData, {
         headers: {
           "Content-Type": "multipart/form-data"
         }
       })
       setService(res.data.result.service);
+      setPropertySelectedImgs([]);
+      setPropertySelectedFiles([]);
       toast.success(res.data.message);
     } catch (err) {
       toast.error(err.response.data.error);
@@ -77,6 +106,32 @@ const PropertyMediaUploader = ({ service, setService }) => {
     <div className="row">
       <div className="col-lg-12">
         <ul className="mb-0">
+          {
+            alreadyStoredImages.map((item, index) => (
+              <li key={index} className="list-inline-item">
+                <div className="portfolio_item">
+                  <img
+                    width={200}
+                    height={200}
+                    className="img-fluid cover"
+                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${item.path}`}
+                    alt="fp1.jpg"
+                  />
+                  <div
+                    className="edu_stats_list"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="Delete"
+                    data-original-title="Delete"
+                  >
+                    <a onClick={() => deleteAlreadyStoredImage(index)}>
+                      <span className="flaticon-garbage"></span>
+                    </a>
+                  </div>
+                </div>
+              </li>
+            ))
+          }
           {propertySelectedImgs.length > 0
             ? propertySelectedImgs?.map((item, index) => (
               <li key={index} className="list-inline-item">
@@ -120,6 +175,20 @@ const PropertyMediaUploader = ({ service, setService }) => {
         </div>
       </div>
       <div className="col-lg-12 d-flex flex-row flex-wrap gap-1">
+        {
+          alreadyStoredFiles.map((file, index) => (
+            <div key={index} className="d-flex flex-row align-items-center p-2 gap-2" style={{
+              maxWidth: '20rem',
+              border: '1px solid black',
+              borderRadius: '5px'
+            }}>
+              <p style={{ fontSize: '1rem', whiteSpace: 'nowrap' }} className="flex-grow-1">{file.name}</p>
+              <button onClick={() => deleteAlreadyStoredFiles(index)} style={{ border: '0px', backgroundColor: 'white' }}>
+                <span className="flaticon-garbage"></span>
+              </button>
+            </div>
+          ))
+        }
         {
           propertySelectedFiles.map((file, index) => (
             <div key={index} className="d-flex flex-row align-items-center p-2 gap-2" style={{

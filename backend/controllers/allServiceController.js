@@ -22,12 +22,11 @@ exports.getServicesBySearchType = async (req, res) => {
 
     const offset = 0;
     const limit = 12;
-    // const orderInfo = [[sequelize.literal('viewerCount'), 'DESC']];
     let orderInfo;
 
     switch (searchType) {
       case 'ranking':
-        orderInfo = [[sequelize.literal('viewerCount'), 'DESC']];
+        orderInfo = [['viewerCount', 'DESC']];
         break;
       case 'recent':
       case 'category':
@@ -60,6 +59,23 @@ exports.getServicesBySearchType = async (req, res) => {
           model: ServiceDetail,
           as: 'DetailInfo'
         },
+        Option,
+        {
+          model: ServiceImage,
+          as: 'RelatedImages',
+        },
+        {
+          model: FileRelatedService,
+          as: 'RelatedFiles',
+        },
+        {
+          model: User,
+          as: 'BookmarkedUsers',
+          through: {
+            attributes: ['isView'],
+          },
+          attributes: ['uuid']
+        },
         {
           model: User,
           as: 'Viewers',
@@ -69,32 +85,15 @@ exports.getServicesBySearchType = async (req, res) => {
           attributes: [],
         },
       ],
-      attributes: {
-        include: [[sequelize.fn('COUNT', sequelize.col('Viewers.ServiceViewer.user_uuid')), 'viewerCount']]
-      },
-      group: ['Service.uuid'],
       order: orderInfo,
       limit,
       offset,
-      subQuery: false,
     })
 
     let servicesObj = [];
 
     for (const service of services) {
-      const relatedImages = await service.getRelatedImages();
-      const relatedFiles = await service.getRelatedFiles();
-      const options = await service.getOptions();
-      const bookmarkedUsers = await service.getBookmarkedUsers({
-        attributes: ['uuid'],
-        joinTableAttributes: ['isView']
-      })
-      const serviceObj = service.toJSON();
-      serviceObj['Options'] = options;
-      serviceObj['RelatedImages'] = relatedImages;
-      serviceObj['RelatedFiles'] = relatedFiles;
-      serviceObj['bookmarkedUsers'] = bookmarkedUsers;
-      servicesObj.push(serviceObj);
+      servicesObj.push(service.toJSON());
     }
 
     res.status(200).json({
@@ -157,7 +156,7 @@ exports.getAllServicesList = async (req, res) => {
     let catergoryQuery = {};
 
     if (keyword) {
-      mainQuery['keyword'] = {
+      mainQuery['title'] = {
         [Op.like]: `%${keyword}%`
       }
     }

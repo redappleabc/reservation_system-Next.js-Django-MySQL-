@@ -35,9 +35,21 @@ module.exports = {
         type: Sequelize.TINYINT.UNSIGNED,
         defaultValue: 0,
       },
+      max_candidates: {
+        type: Sequelize.INTEGER.UNSIGNED,
+        defaultValue: 4294967295 // max value of integer type
+      },
       tags: {
         type: Sequelize.JSON,
         defaultValue: [],
+      },
+      viewerCount: {
+        type: Sequelize.INTEGER.UNSIGNED,
+        defaultValue: 0,
+      },
+      reservationCount: {
+        type: Sequelize.INTEGER.UNSIGNED,
+        defaultValue: 0,
       },
       user_uuid: {
         type: Sequelize.UUID,

@@ -6,29 +6,21 @@ import { AllTags } from "@/utils/configInfo";
 
 const CheckBoxFilter = ({ tags = [], setTags = () => { return; } }) => {
 
-  const [selectedTags, setSelectedTags] = useState([]);
-
-  // useEffect(() => {
-  //   setSelectedTags(tags);
-  // }, [tags])
+  const [selectedTags, setSelectedTags] = useState(tags);
 
   const handleCheckChange = (e) => {
     const checked = e.target.checked;
     const key = e.target.value;
 
     if (!checked) {
-      const prevTags = [...selectedTags];
-      const index = selectedTags.findIndex(item => item === key);
+      const prevTags = [...tags];
+      const index = tags.findIndex(item => item === key);
       prevTags.splice(index, 1);
-      setSelectedTags(prevTags);
+      setTags(prevTags);
     } else {
-      setSelectedTags([...selectedTags, key]);
+      setTags([...tags, key]);
     }
   }
-
-  useEffect(() => {
-    setTags(selectedTags);
-  }, [selectedTags])
 
   return (
     <>
@@ -42,7 +34,7 @@ const CheckBoxFilter = ({ tags = [], setTags = () => { return; } }) => {
                     type="checkbox"
                     className="form-check-input"
                     id={`tag-${index + 1}`}
-                    checked={selectedTags.some(item => item === tag.key)}
+                    checked={tags.some(item => item === tag.key)}
                     value={tag.key}
                     onChange={handleCheckChange}
                   />

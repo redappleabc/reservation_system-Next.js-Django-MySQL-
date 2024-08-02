@@ -26,7 +26,7 @@ exports.getServiceList = async (req, res) => {
     let orderInfo;
     switch (sortType) {
       case 'featured_first':
-        orderInfo = [[sequelize.literal('viewerCount'), 'DESC']];
+        orderInfo = [['viewerCount', 'DESC']];
         break;
       case 'recent':
         orderInfo = [['createdAt', 'DESC']];
@@ -65,14 +65,9 @@ exports.getServiceList = async (req, res) => {
           attributes: [],
         }
       ],
-      attributes: {
-        include: [[sequelize.fn('COUNT', sequelize.col('Viewers.ServiceViewer.user_uuid')), 'viewerCount']]
-      },
-      group: ['Service.uuid'],
       order: orderInfo,
       limit: Number(limit),
       offset,
-      subQuery: false,
     })
 
     let servicesObj = [];
@@ -85,7 +80,6 @@ exports.getServiceList = async (req, res) => {
       serviceObj['Options'] = options;
       serviceObj['RelatedImages'] = relatedImages;
       serviceObj['RelatedFiles'] = relatedFiles;
-      // serviceObj['viewerCount'] = serviceObj['viewerCount'] / 8;
       servicesObj.push(serviceObj);
     }
 
@@ -116,6 +110,9 @@ exports.createServiceMainData = async (req, res) => {
     const user = req.user;
     const { serviceId: service_uuid, ...mainData } = req.body;
     let service;
+    if (mainData.max_candidates === 'inf') {
+      delete mainData.max_candidates;
+    }
     if (!service_uuid) {
       const newService = await Service.create({
         user_uuid: user.uuid,
@@ -365,11 +362,30 @@ exports.createServiceCategoryAndTags = async (req, res) => {
 
 exports.createRelatedImagesAndFiles = async (req, res) => {
   try {
-    const { serviceId: service_uuid } = req.body;
+    const { serviceId: service_uuid, alreadyImages = [], alreadyFiles = [] } = req.body;
     const user = req.user;
 
     const images = req.files['images'] || [];
     const files = req.files['files'] || [];
+
+    let alreadyImagesObj = [];
+    let alreadyFilesObj = [];
+
+    if (Array.isArray(alreadyImages)) {
+      for (const image of alreadyImages) {
+        alreadyImagesObj.push(JSON.parse(image));
+      }
+    } else {
+      alreadyImagesObj.push(JSON.parse(alreadyImages));
+    }
+
+    if (Array.isArray(alreadyFiles)) {
+      for (const file of alreadyFiles) {
+        alreadyFilesObj.push(JSON.parse(file));
+      }
+    } else {
+      alreadyFilesObj.push(JSON.parse(alreadyFiles));
+    }
 
     const presentService = await Service.findOne({
       where: {
@@ -387,20 +403,24 @@ exports.createRelatedImagesAndFiles = async (req, res) => {
     const presentFiles = await presentService.getRelatedFiles();
 
     for (const image of presentImages) {
-      fs.unlinkSync(image.path);
-      await ServiceImage.destroy({
-        where: {
-          id: image.id
-        }
-      })
+      if (!alreadyImagesObj.some(item => item.path === image.path)) {
+        fs.unlinkSync(image.path);
+        await ServiceImage.destroy({
+          where: {
+            id: image.id
+          }
+        })
+      }
     }
     for (const file of presentFiles) {
-      fs.unlinkSync(file.path);
-      await FileRelatedService.destroy({
-        where: {
-          id: file.id
-        }
-      })
+      if (!alreadyFilesObj.some(item => item.path === file.path)) {
+        fs.unlinkSync(file.path);
+        await FileRelatedService.destroy({
+          where: {
+            id: file.id
+          }
+        })
+      }
     }
 
     for (const image of images) {
