@@ -141,7 +141,7 @@ exports.getAllServicesList = async (req, res) => {
         orderInfo = [['createdAt', 'DESC']];
         break;
       case 'popular':
-        orderInfo = [[sequelize.literal('viewerCount'), 'DESC']];
+        orderInfo = [['viewerCount', 'DESC']];
         break;
       default:
         orderInfo = [['createdAt', 'DESC']];
@@ -256,14 +256,10 @@ exports.getAllServicesList = async (req, res) => {
           attributes: [],
         },
       ],
-      attributes: {
-        include: [[sequelize.fn('COUNT', sequelize.col('Viewers.ServiceViewer.user_uuid')), 'viewerCount']]
-      },
       group: ['Service.uuid'],
       limit: Number(limit),
       offset,
       order: orderInfo,
-      subQuery: false,
     })
 
     const allServiceCount = await Service.count({

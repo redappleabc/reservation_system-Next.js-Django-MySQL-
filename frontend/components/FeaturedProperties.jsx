@@ -74,7 +74,6 @@ const FeaturedProperties = ({ type, category = "" }) => {
       const res = await frontendAxiosInstance.get(`allService/basic?${queryStr}`);
 
       const resultServices = res.data.result.services;
-      console.log(resultServices);
       let sampleServices = resultServices;
       if (sampleServices.length > 0) {
         while (sampleServices.length < 12) {
