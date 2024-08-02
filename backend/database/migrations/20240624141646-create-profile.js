@@ -24,21 +24,15 @@ module.exports = {
       },
       lastname: {
         type: Sequelize.STRING,
-        allowNull: false
       },
       firstname: {
         type: Sequelize.STRING,
-        allowNull: false
       },
       occupationType: {
         type: Sequelize.STRING
       },
       birthday: {
         type: Sequelize.DATE,
-        allowNull: false,
-        validate: {
-          isDate: true
-        }
       },
       gender: {
         type: Sequelize.STRING,

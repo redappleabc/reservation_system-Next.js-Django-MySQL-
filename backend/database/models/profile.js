@@ -24,7 +24,13 @@ module.exports = (sequelize, DataTypes) => {
     birthday: {
       type: DataTypes.DATE,
       set(value) {
-        this.setDataValue('birthday', new Date(value));
+        const date = new Date(value);
+
+        if (date instanceof Date && !isNaN(date.getTime())) {
+          this.setDataValue('birthday', date);
+        } else {
+          this.setDataValue('birthday', null);
+        }
       }
     },
     gender: DataTypes.STRING,
