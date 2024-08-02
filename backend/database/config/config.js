@@ -12,7 +12,7 @@ module.exports = {
     dialectOptions: {
       bigNumberStrings: true,
     },
-    timezone: "+08:00",
+    timezone: process.env.TIMEZONE,
     logging: false,
   },
   test: {
@@ -25,7 +25,7 @@ module.exports = {
     dialectOptions: {
       bigNumberStrings: true,
     },
-    timezone: "+08:00",
+    timezone: process.env.TIMEZONE,
   },
   production: {
     username: process.env.MYSQL_USERNAME,
@@ -37,7 +37,7 @@ module.exports = {
     dialectOptions: {
       bigNumberStrings: true,
     },
-    timezone: "+08:00",
+    timezone: process.env.TIMEZONE,
     logging: false,
   },
 };
