@@ -255,8 +255,24 @@ exports.getAllServicesList = async (req, res) => {
           },
           attributes: [],
         },
+        Option,
+        {
+          model: ServiceImage,
+          as: 'RelatedImages',
+        },
+        {
+          model: FileRelatedService,
+          as: 'RelatedFiles',
+        },
+        {
+          model: User,
+          as: 'BookmarkedUsers',
+          through: {
+            attributes: ['isView']
+          },
+          attributes: ['uuid']
+        },
       ],
-      group: ['Service.uuid'],
       limit: Number(limit),
       offset,
       order: orderInfo,
@@ -286,19 +302,7 @@ exports.getAllServicesList = async (req, res) => {
     let servicesObj = [];
 
     for (const service of services) {
-      const relatedImages = await service.getRelatedImages();
-      const relatedFiles = await service.getRelatedFiles();
-      const options = await service.getOptions();
-      const bookmarkedUsers = await service.getBookmarkedUsers({
-        attributes: ['uuid'],
-        joinTableAttributes: ['isView']
-      })
-      const serviceObj = service.toJSON();
-      serviceObj['Options'] = options;
-      serviceObj['RelatedImages'] = relatedImages;
-      serviceObj['RelatedFiles'] = relatedFiles;
-      serviceObj['bookmarkedUsers'] = bookmarkedUsers;
-      servicesObj.push(serviceObj);
+      servicesObj.push(service.toJSON());
     }
 
     res.status(200).json({
